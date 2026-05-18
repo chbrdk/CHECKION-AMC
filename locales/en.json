@@ -835,6 +835,7 @@
     "pageClassificationTier3": "Multiple topics / mix",
     "pageClassificationTier4": "Clearly one topic",
     "pageClassificationTier5": "Clearly dedicated to one core topic",
+    "pageClassificationTagCount": "{count} tags",
     "overviewHint": "Scan details, page topic, and Eco, Performance, and UX cards are shown above.",
     "dwellEstimateTitle": "Estimated dwell time",
     "dwellEstimateHint": "Model from text volume, readability, and interaction — not analytics.",

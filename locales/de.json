@@ -835,6 +835,7 @@
     "pageClassificationTier3": "Mehrere Themen / Mischung",
     "pageClassificationTier4": "Eindeutig ein Thema",
     "pageClassificationTier5": "Klar einem Kernthema gewidmet",
+    "pageClassificationTagCount": "{count} Tags",
     "overviewHint": "Scan-Infos, Seitenthema sowie Eco-, Performance- und UX-Karten befinden sich oben.",
     "dwellEstimateTitle": "Geschätzte Verweildauer",
     "dwellEstimateHint": "Modell aus Textumfang, Lesbarkeit und Interaktion — kein Analytics-Wert.",

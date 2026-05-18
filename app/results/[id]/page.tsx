@@ -115,6 +115,7 @@ import { amcMobileFlushCardSx, amcMobileFlushPageShellSx } from '@/lib/amc-page-
 import { AmcResponsiveTabs } from '@/components/amc/AmcResponsiveTabs';
 import { ResultsPageHeader } from '@/components/results/ResultsPageHeader';
 import { ResultsIssueFilters } from '@/components/results/ResultsIssueFilters';
+import { PageClassificationTierAccordion } from '@/components/results/PageClassificationTierAccordion';
 import { shortenResultsViewModeLabel, type ResultsViewMode } from '@/lib/results/view-modes';
 
 function UxCheckV2Content({ summary }: { summary: UxCheckV2Summary }) {
@@ -657,18 +658,17 @@ export default function ResultsPage() {
                                         headerActions={<InfoTooltip title={t('info.pageClassification')} ariaLabel={t('common.info')} placement="bottom" />}
                                     >
                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 'var(--msqdx-spacing-md)' }}>
-                                            {byTier.map(({ tier, tags }) => (
-                                                <Box key={tier}>
-                                                    <MsqdxTypography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                                        {t('results.pageClassificationTier')} {tier}: {t(`results.pageClassificationTier${tier}` as 'results.pageClassificationTier1')}
-                                                    </MsqdxTypography>
-                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                        {tags.map((tt, i) => (
-                                                            <MsqdxChip key={`${tier}-${i}`} label={tt.tag} size="small" variant="outlined" sx={{ fontSize: '0.75rem' }} />
-                                                        ))}
-                                                    </Box>
-                                                </Box>
-                                            ))}
+                                            <PageClassificationTierAccordion
+                                                tiers={byTier}
+                                                compact={compact}
+                                                tierLabel={(tier) => `${t('results.pageClassificationTier')} ${tier}`}
+                                                tierDescription={(tier) =>
+                                                    t(`results.pageClassificationTier${tier}` as 'results.pageClassificationTier1')
+                                                }
+                                                tagCountLabel={(count) => t('results.pageClassificationTagCount', { count })}
+                                                chipsMoreLabel={(n) => t('geoEeat.chipsMore', { count: n })}
+                                                chipsLessLabel={t('geoEeat.chipsLess')}
+                                            />
                                             {pc.shortSummary && (
                                                 <Box>
                                                     <MsqdxTypography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>{t('results.pageClassificationSummary')}</MsqdxTypography>

@@ -17,9 +17,10 @@ describe('AmcLiteNavLink', () => {
     expect(source).toContain('PATH_SCAN');
   });
 
-  it('renders sidebar nav icons at Material Symbols wght 600', () => {
+  it('renders scan (search) nav icon at Material Symbols wght 600 only', () => {
     const css = readFileSync(resolve(process.cwd(), 'styles/globals.css'), 'utf8');
-    expect(css).toContain('.msqdx-admin-nav .msqdx-material-symbol');
+    expect(css).toContain('a[href$="/scan"] .msqdx-material-symbol');
     expect(css).toContain("'wght' 600");
+    expect(css).not.toMatch(/\.msqdx-admin-nav \.msqdx-material-symbol \{[^[]/);
   });
 });

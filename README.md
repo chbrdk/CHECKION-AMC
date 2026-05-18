@@ -1,3 +1,9 @@
+**CHECKION-AMC** — Fork für die AMC-Demo ([amc.projects-a.plygrnd.tech](https://amc.projects-a.plygrnd.tech)): Scan-only UI, gemeinsame DB mit Haupt-CHECKION. Siehe `knowledge/amc-fork.md`.
+
+Upstream: [chbrdk/CHECKION](https://github.com/chbrdk/CHECKION).
+
+---
+
 CHECKION – Next.js app for accessibility and content checks (scans, journeys, GEO/E-E-A-T, tools).
 
 ## Getting Started

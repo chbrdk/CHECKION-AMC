@@ -1,21 +1,27 @@
 #!/bin/sh
 set -e
 
-# Apply DB schema (create/update tables) before starting the app.
-if [ -n "$DATABASE_URL" ]; then
-  # One-time: drop user_id FKs so PLEXON user IDs work without a row in CHECKION users table.
-  if [ -f "./lib/db/migrations/0004_drop_user_id_fk_for_plexon.sql" ]; then
-    echo "[CHECKION] Running migration 0004 (drop user_id FKs for PLEXON)..."
-    node ./scripts/run-migration-0004.mjs || true
-  fi
-  echo "[CHECKION] Running drizzle-kit push..."
-  if npx drizzle-kit push; then
-    echo "[CHECKION] Schema up to date."
-  else
-    echo "[CHECKION] drizzle-kit push failed (DB unreachable or schema error). App will start anyway."
-  fi
+# AMC fork: schema migrations run on the main CHECKION deployment only (shared DB).
+# Set CHECKION_RUN_SCHEMA_PUSH=1 to force push (e.g. local dev without main CHECKION).
+if [ -n "$DATABASE_URL" ] && [ -n "$CHECKION_RUN_SCHEMA_PUSH" ]; then
+  case "$CHECKION_RUN_SCHEMA_PUSH" in
+    0|false|no|off|"")
+      ;;
+    *)
+      if [ -f "./lib/db/migrations/0004_drop_user_id_fk_for_plexon.sql" ]; then
+        echo "[CHECKION-AMC] Running migration 0004 (drop user_id FKs for PLEXON)..."
+        node ./scripts/run-migration-0004.mjs || true
+      fi
+      echo "[CHECKION-AMC] Running drizzle-kit push (CHECKION_RUN_SCHEMA_PUSH)..."
+      if npx drizzle-kit push; then
+        echo "[CHECKION-AMC] Schema up to date."
+      else
+        echo "[CHECKION-AMC] drizzle-kit push failed (DB unreachable or schema error). App will start anyway."
+      fi
+      ;;
+  esac
 else
-  echo "[CHECKION] DATABASE_URL not set, skipping schema push."
+  echo "[CHECKION-AMC] Skipping drizzle-kit push (shared DB; migrate via main CHECKION). Set CHECKION_RUN_SCHEMA_PUSH=1 to override."
 fi
 
 # Optional: assign lineage_key + lineage_version for existing domain_scans (idempotent).

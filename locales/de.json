@@ -69,7 +69,8 @@
     "deepScans": "Domain-Scans",
     "projects": "Projekte",
     "developers": "Settings",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "amcLiteUpgradeTooltip": "Für die Vollversion kontaktieren Sie uns."
   },
   "projects": {
     "title": "Projekte",

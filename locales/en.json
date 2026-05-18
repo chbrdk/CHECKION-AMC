@@ -69,7 +69,8 @@
     "deepScans": "Deep scans",
     "projects": "Projects",
     "developers": "Settings",
-    "settings": "Settings"
+    "settings": "Settings",
+    "amcLiteUpgradeTooltip": "Contact us for the full version."
   },
   "projects": {
     "title": "Projects",

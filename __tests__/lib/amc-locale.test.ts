@@ -24,4 +24,10 @@ describe('amc locale (German-only)', () => {
     expect(t('nav.newScan')).toBe('Neuer Scan');
     expect(t('nav.history')).toBe('Verlauf');
   });
+
+  it('uses short scan mode tab labels', () => {
+    const t = createTranslator('de');
+    expect(t('scan.singleTab')).toBe('Single Scan');
+    expect(t('scan.deepTab')).toBe('Deep Scan');
+  });
 });

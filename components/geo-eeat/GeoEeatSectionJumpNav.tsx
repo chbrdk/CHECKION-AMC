@@ -32,6 +32,7 @@ export function GeoEeatSectionJumpNav({ sections }: GeoEeatSectionJumpNavProps) 
         gap: 0.75,
         flexWrap: 'wrap',
         py: 1,
+        px: { xs: 'var(--msqdx-spacing-md)', md: 0 },
         mb: 1.5,
         bgcolor: 'var(--color-card-bg)',
         borderBottom: '1px solid var(--color-border)',

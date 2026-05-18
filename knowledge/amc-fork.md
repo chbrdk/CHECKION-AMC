@@ -37,7 +37,7 @@ git merge upstream/main
 - **WCAG-Standard:** Kein Level-Dropdown auf `/scan`; Scans laufen fest mit **WCAG 2.1 AA** (`isAmcScanWcagStandardSelectorEnabled()` → `false`).
 - **Scan-Engines:** Kein Engine-Picker; fest **axe-core + HTML CodeSniffer** (`isAmcScanRunnerSelectorEnabled()` → `false`).
 - **Scan-Seite:** Kein separater Seitenkopf — **Neuer Scan** + Beschreibung stehen in der Konfigurationskarte (`isAmcScanPageHeaderEnabled()` → `false`). Auf Mobile kein horizontales Padding (`isAmcMobileMainFlushHorizontal()` für `/scan` und `/geo-eeat/*`, siehe `lib/amc-page-shell.ts`).
-- **GEO-Ergebnisse (Mobile):** Toolbar stapelt Aktionen unter `md`; sticky Sprungnavigation On-Page ↔ Competitive; Competitive-Metriken vertikal; Modell-Tabs gekürzt (`lib/geo-eeat/model-label.ts`); Positionsdiagramm/Tabelle nur ab `md` (Hinweistext auf Mobile); E-E-A-T-Balken volle Breite; Accordion-Fragen mit 2-Zeilen-Clamping.
+- **GEO-Ergebnisse (Mobile):** Phase 1: Toolbar, Sprungnavigation, vertikale Metriken, Kurz-Modelllabels, Diagramm ab `md`, volle Balkenbreite, 2-Zeilen-Queries. Phase 2: Sticky Action Bar (Teilen/Rerun), Run/Modell als Select, Zitationen vertikal, Chips „+N mehr“, Reasoning einklappbar, Karten-Innenpadding auf Flush-Pages (`lib/amc-page-shell.ts`).
 - **Einstellungen:** Nur Profil, Erscheinungsbild, Passwort und Abmelden — kein **Standard-Konfiguration**, kein **API-Zugang**, kein **Über CHECKION** (`isAmcSettingsScanConfigEnabled()` / `isAmcSettingsApiTokensEnabled()` / `isAmcSettingsAboutEnabled()` → `false`).
 
 ## Coolify (AMC)

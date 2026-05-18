@@ -19,8 +19,14 @@ import { GeoEeatCompetitiveMetricRow } from '@/components/geo-eeat/GeoEeatCompet
 import { GeoEeatPageToolbar } from '@/components/geo-eeat/GeoEeatPageToolbar';
 import { GeoEeatSectionJumpNav } from '@/components/geo-eeat/GeoEeatSectionJumpNav';
 import type { GeoEeatIntensiveResult, GeoEeatPageResult, CompetitiveBenchmarkResult } from '@/lib/types';
-import { amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
-import { shortenCompetitiveModelLabel } from '@/lib/geo-eeat/model-label';
+import { amcMobileFlushCardSx, amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
+import { buildCompetitiveRunOptions, competitiveRunIndexFromSelection } from '@/lib/geo-eeat/competitive-run-options';
+import { GeoEeatCollapsibleChips } from '@/components/geo-eeat/GeoEeatCollapsibleChips';
+import { GeoEeatCompetitiveModelSelector } from '@/components/geo-eeat/GeoEeatCompetitiveModelSelector';
+import { GeoEeatCompetitiveRunSelector } from '@/components/geo-eeat/GeoEeatCompetitiveRunSelector';
+import { GeoEeatMobileActionBar } from '@/components/geo-eeat/GeoEeatMobileActionBar';
+import { GeoEeatQueryCitationList } from '@/components/geo-eeat/GeoEeatQueryCitationList';
+import { GeoEeatReasoningDisclosure } from '@/components/geo-eeat/GeoEeatReasoningDisclosure';
 
 const POLL_INTERVAL_MS = 2500;
 
@@ -290,7 +296,7 @@ export default function GeoEeatResultPage() {
             <GeoEeatSectionJumpNav sections={sectionJumps} />
 
             {url && (
-                <MsqdxTypography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <MsqdxTypography variant="body2" color="text.secondary" sx={{ mb: 2, px: { xs: 'var(--msqdx-spacing-md)', md: 0 } }}>
                     {payload?.competitiveOnly && payload?.companyHost
                         ? t('geoEeat.competitiveOnlyCompanyLine', { company: payload.companyHost })
                         : url}
@@ -302,7 +308,7 @@ export default function GeoEeatResultPage() {
                 <MsqdxMoleculeCard
                     title={t('geoEeat.onPageTitle')}
                     variant="flat"
-                    sx={{ bgcolor: 'var(--color-card-bg)', mb: 2 }}
+                    sx={{ bgcolor: 'var(--color-card-bg)', mb: 2, ...amcMobileFlushCardSx() }}
                     borderRadius="lg"
                 >
                     {payload.pages.map((page: GeoEeatPageResult, idx: number) => {
@@ -322,27 +328,54 @@ export default function GeoEeatResultPage() {
                                 {gen && (
                                     <Box sx={{ mt: 1.5 }}>
                                         <MsqdxTypography variant="caption" sx={{ fontWeight: 600, color: 'var(--color-text-muted-on-light)', display: 'block', mb: 0.5 }}>{t('geoEeat.geoAndTech')}</MsqdxTypography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                            <MsqdxChip size="small" label={`${t('geoEeat.geoScore')}: ${gen.score}`} />
-                                            {gen.technical?.hasLlmsTxt != null && (
-                                                <MsqdxChip size="small" label={gen.technical.hasLlmsTxt ? t('geoEeat.hasLlmsTxt') : t('geoEeat.noLlmsTxt')} />
-                                            )}
-                                            {gen.technical?.hasRobotsAllowingAI != null && (
-                                                <MsqdxChip size="small" label={gen.technical.hasRobotsAllowingAI ? t('geoEeat.robotsAiAllowed') : t('geoEeat.robotsAiRestricted')} />
-                                            )}
-                                            {gen.technical?.schemaCoverage?.length ? (
-                                                <MsqdxChip size="small" label={`${t('geoEeat.schemaLabel')}: ${gen.technical.schemaCoverage.slice(0, 3).join(', ')}${gen.technical.schemaCoverage.length > 3 ? '…' : ''}`} />
-                                            ) : null}
-                                            {gen.content?.faqCount != null && gen.content.faqCount > 0 && (
-                                                <MsqdxChip size="small" label={`${t('geoEeat.faqLabel')}: ${gen.content.faqCount}`} />
-                                            )}
-                                            {gen.content?.citationDensity != null && (
-                                                <MsqdxChip size="small" label={`${t('geoEeat.citationsLabel')}: ${typeof gen.content.citationDensity === 'number' ? gen.content.citationDensity.toFixed(1) : gen.content.citationDensity}`} />
-                                            )}
-                                            {gen.expertise?.hasAuthorBio != null && (
-                                                <MsqdxChip size="small" label={gen.expertise.hasAuthorBio ? t('geoEeat.hasAuthorBio') : t('geoEeat.noAuthorBio')} />
-                                            )}
-                                        </Box>
+                                        {compact ? (
+                                            <GeoEeatCollapsibleChips
+                                                moreLabel={(n) => t('geoEeat.chipsMore', { count: n })}
+                                                lessLabel={t('geoEeat.chipsLess')}
+                                            >
+                                                <MsqdxChip size="small" label={`${t('geoEeat.geoScore')}: ${gen.score}`} />
+                                                {gen.technical?.hasLlmsTxt != null && (
+                                                    <MsqdxChip size="small" label={gen.technical.hasLlmsTxt ? t('geoEeat.hasLlmsTxt') : t('geoEeat.noLlmsTxt')} />
+                                                )}
+                                                {gen.technical?.hasRobotsAllowingAI != null && (
+                                                    <MsqdxChip size="small" label={gen.technical.hasRobotsAllowingAI ? t('geoEeat.robotsAiAllowed') : t('geoEeat.robotsAiRestricted')} />
+                                                )}
+                                                {gen.technical?.schemaCoverage?.length ? (
+                                                    <MsqdxChip size="small" label={`${t('geoEeat.schemaLabel')}: ${gen.technical.schemaCoverage.slice(0, 3).join(', ')}${gen.technical.schemaCoverage.length > 3 ? '…' : ''}`} />
+                                                ) : null}
+                                                {gen.content?.faqCount != null && gen.content.faqCount > 0 && (
+                                                    <MsqdxChip size="small" label={`${t('geoEeat.faqLabel')}: ${gen.content.faqCount}`} />
+                                                )}
+                                                {gen.content?.citationDensity != null && (
+                                                    <MsqdxChip size="small" label={`${t('geoEeat.citationsLabel')}: ${typeof gen.content.citationDensity === 'number' ? gen.content.citationDensity.toFixed(1) : gen.content.citationDensity}`} />
+                                                )}
+                                                {gen.expertise?.hasAuthorBio != null && (
+                                                    <MsqdxChip size="small" label={gen.expertise.hasAuthorBio ? t('geoEeat.hasAuthorBio') : t('geoEeat.noAuthorBio')} />
+                                                )}
+                                            </GeoEeatCollapsibleChips>
+                                        ) : (
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                <MsqdxChip size="small" label={`${t('geoEeat.geoScore')}: ${gen.score}`} />
+                                                {gen.technical?.hasLlmsTxt != null && (
+                                                    <MsqdxChip size="small" label={gen.technical.hasLlmsTxt ? t('geoEeat.hasLlmsTxt') : t('geoEeat.noLlmsTxt')} />
+                                                )}
+                                                {gen.technical?.hasRobotsAllowingAI != null && (
+                                                    <MsqdxChip size="small" label={gen.technical.hasRobotsAllowingAI ? t('geoEeat.robotsAiAllowed') : t('geoEeat.robotsAiRestricted')} />
+                                                )}
+                                                {gen.technical?.schemaCoverage?.length ? (
+                                                    <MsqdxChip size="small" label={`${t('geoEeat.schemaLabel')}: ${gen.technical.schemaCoverage.slice(0, 3).join(', ')}${gen.technical.schemaCoverage.length > 3 ? '…' : ''}`} />
+                                                ) : null}
+                                                {gen.content?.faqCount != null && gen.content.faqCount > 0 && (
+                                                    <MsqdxChip size="small" label={`${t('geoEeat.faqLabel')}: ${gen.content.faqCount}`} />
+                                                )}
+                                                {gen.content?.citationDensity != null && (
+                                                    <MsqdxChip size="small" label={`${t('geoEeat.citationsLabel')}: ${typeof gen.content.citationDensity === 'number' ? gen.content.citationDensity.toFixed(1) : gen.content.citationDensity}`} />
+                                                )}
+                                                {gen.expertise?.hasAuthorBio != null && (
+                                                    <MsqdxChip size="small" label={gen.expertise.hasAuthorBio ? t('geoEeat.hasAuthorBio') : t('geoEeat.noAuthorBio')} />
+                                                )}
+                                            </Box>
+                                        )}
                                     </Box>
                                 )}
 
@@ -350,13 +383,26 @@ export default function GeoEeatResultPage() {
                                 {(eeatSignals || tech?.hasImpressum != null || tech?.hasPrivacy != null) && (
                                     <Box sx={{ mt: 1 }}>
                                         <MsqdxTypography variant="caption" sx={{ fontWeight: 600, color: 'var(--color-text-muted-on-light)', display: 'block', mb: 0.5 }}>{t('geoEeat.eeatSignalsPage')}</MsqdxTypography>
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                            {eeatSignals?.hasImpressum != null && <MsqdxChip size="small" label={eeatSignals.hasImpressum ? t('geoEeat.hasImpressum') : t('geoEeat.noImpressum')} sx={eeatSignals.hasImpressum ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
-                                            {eeatSignals?.hasContact != null && <MsqdxChip size="small" label={eeatSignals.hasContact ? t('geoEeat.hasContact') : t('geoEeat.noContact')} sx={eeatSignals.hasContact ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
-                                            {eeatSignals?.hasAboutLink != null && <MsqdxChip size="small" label={eeatSignals.hasAboutLink ? t('geoEeat.hasAboutLink') : t('geoEeat.noAboutLink')} sx={eeatSignals.hasAboutLink ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
-                                            {eeatSignals?.hasTeamLink != null && <MsqdxChip size="small" label={eeatSignals.hasTeamLink ? t('geoEeat.hasTeamLink') : t('geoEeat.noTeamLink')} sx={eeatSignals.hasTeamLink ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
-                                            {tech?.hasPrivacy != null && <MsqdxChip size="small" label={tech.hasPrivacy ? t('geoEeat.hasPrivacy') : t('geoEeat.noPrivacy')} sx={tech.hasPrivacy ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
-                                        </Box>
+                                        {compact ? (
+                                            <GeoEeatCollapsibleChips
+                                                moreLabel={(n) => t('geoEeat.chipsMore', { count: n })}
+                                                lessLabel={t('geoEeat.chipsLess')}
+                                            >
+                                                {eeatSignals?.hasImpressum != null && <MsqdxChip size="small" label={eeatSignals.hasImpressum ? t('geoEeat.hasImpressum') : t('geoEeat.noImpressum')} sx={eeatSignals.hasImpressum ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                                {eeatSignals?.hasContact != null && <MsqdxChip size="small" label={eeatSignals.hasContact ? t('geoEeat.hasContact') : t('geoEeat.noContact')} sx={eeatSignals.hasContact ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                                {eeatSignals?.hasAboutLink != null && <MsqdxChip size="small" label={eeatSignals.hasAboutLink ? t('geoEeat.hasAboutLink') : t('geoEeat.noAboutLink')} sx={eeatSignals.hasAboutLink ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                                {eeatSignals?.hasTeamLink != null && <MsqdxChip size="small" label={eeatSignals.hasTeamLink ? t('geoEeat.hasTeamLink') : t('geoEeat.noTeamLink')} sx={eeatSignals.hasTeamLink ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                                {tech?.hasPrivacy != null && <MsqdxChip size="small" label={tech.hasPrivacy ? t('geoEeat.hasPrivacy') : t('geoEeat.noPrivacy')} sx={tech.hasPrivacy ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                            </GeoEeatCollapsibleChips>
+                                        ) : (
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                {eeatSignals?.hasImpressum != null && <MsqdxChip size="small" label={eeatSignals.hasImpressum ? t('geoEeat.hasImpressum') : t('geoEeat.noImpressum')} sx={eeatSignals.hasImpressum ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                                {eeatSignals?.hasContact != null && <MsqdxChip size="small" label={eeatSignals.hasContact ? t('geoEeat.hasContact') : t('geoEeat.noContact')} sx={eeatSignals.hasContact ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                                {eeatSignals?.hasAboutLink != null && <MsqdxChip size="small" label={eeatSignals.hasAboutLink ? t('geoEeat.hasAboutLink') : t('geoEeat.noAboutLink')} sx={eeatSignals.hasAboutLink ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                                {eeatSignals?.hasTeamLink != null && <MsqdxChip size="small" label={eeatSignals.hasTeamLink ? t('geoEeat.hasTeamLink') : t('geoEeat.noTeamLink')} sx={eeatSignals.hasTeamLink ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                                {tech?.hasPrivacy != null && <MsqdxChip size="small" label={tech.hasPrivacy ? t('geoEeat.hasPrivacy') : t('geoEeat.noPrivacy')} sx={tech.hasPrivacy ? { bgcolor: alpha(MSQDX_STATUS.success.base, 0.12), color: MSQDX_STATUS.success.base } : {}} />}
+                                            </Box>
+                                        )}
                                     </Box>
                                 )}
 
@@ -388,10 +434,20 @@ export default function GeoEeatResultPage() {
                                             ))}
                                         </Box>
                                         {(page.eeatScores.trust.reasoning || page.eeatScores.experience.reasoning) && (
-                                            <MsqdxTypography variant="caption" sx={{ display: 'block', mt: 0.5, color: 'var(--color-text-muted-on-light)' }}>
-                                                {page.eeatScores.trust.reasoning ? `${t('geoEeat.trustReasoningPrefix')}: ${page.eeatScores.trust.reasoning}` : ''}
-                                                {page.eeatScores.experience.reasoning ? ` · ${t('geoEeat.experienceReasoningPrefix')}: ${page.eeatScores.experience.reasoning}` : ''}
-                                            </MsqdxTypography>
+                                            <GeoEeatReasoningDisclosure
+                                                text={[
+                                                    page.eeatScores.trust.reasoning
+                                                        ? `${t('geoEeat.trustReasoningPrefix')}: ${page.eeatScores.trust.reasoning}`
+                                                        : '',
+                                                    page.eeatScores.experience.reasoning
+                                                        ? `${t('geoEeat.experienceReasoningPrefix')}: ${page.eeatScores.experience.reasoning}`
+                                                        : '',
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(' · ')}
+                                                showLabel={t('geoEeat.showReasoning')}
+                                                hideLabel={t('geoEeat.hideReasoning')}
+                                            />
                                         )}
                                     </Box>
                                 )}
@@ -413,9 +469,13 @@ export default function GeoEeatResultPage() {
                                             </Box>
                                             <MsqdxTypography variant="body2" sx={{ fontWeight: 600 }}>{page.geoFitnessScore}/100</MsqdxTypography>
                                         </Box>
-                                        <MsqdxTypography variant="body2" sx={{ color: 'var(--color-text-on-light)' }}>
-                                            {page.geoFitnessReasoning ?? ''}
-                                        </MsqdxTypography>
+                                        {page.geoFitnessReasoning ? (
+                                            <GeoEeatReasoningDisclosure
+                                                text={page.geoFitnessReasoning}
+                                                showLabel={t('geoEeat.showReasoning')}
+                                                hideLabel={t('geoEeat.hideReasoning')}
+                                            />
+                                        ) : null}
                                         {page.missingGeoElements && page.missingGeoElements.length > 0 && (
                                             <MsqdxTypography variant="caption" sx={{ display: 'block', mt: 0.5, color: 'var(--color-text-muted-on-light)' }}>
                                                 {t('geoEeat.missingWeakLabel')}: {page.missingGeoElements.join(', ')}
@@ -496,51 +556,36 @@ export default function GeoEeatResultPage() {
                 const brSpacing = MSQDX_SPACING.borderRadius as Record<string, unknown> | undefined;
                 const radiusSm = typeof brSpacing?.sm === 'number' ? brSpacing.sm : 4;
 
-                const runTabIndex = selectedCompetitiveRunId == null
-                    ? 0
-                    : competitiveHistory.findIndex((r) => r.id === selectedCompetitiveRunId) + 1;
-                const runTabs = [
-                    { label: t('geoEeat.competitiveRunCurrentLabel'), value: 0 },
-                    ...competitiveHistory.map((run, i) => {
-                        const dateStr = run.started_at
-                            ? new Date(run.started_at).toLocaleString(undefined, {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            })
-                            : '';
-                        return {
-                            label: dateStr || run.id.slice(0, 8),
-                            value: i + 1,
-                        };
-                    }),
-                ];
-                const effectiveRunTabIndex = runTabIndex >= 0 && runTabIndex < runTabs.length ? runTabIndex : 0;
+                const formatHistoryDate = (iso: string) =>
+                    new Date(iso).toLocaleString(undefined, {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    });
+                const runOptions = buildCompetitiveRunOptions(
+                    t('geoEeat.competitiveRunCurrentLabel'),
+                    competitiveHistory,
+                    formatHistoryDate,
+                );
+                const effectiveRunTabIndex = competitiveRunIndexFromSelection(selectedCompetitiveRunId, competitiveHistory);
 
                 return (
                     <MsqdxMoleculeCard
                         title={t('geoEeat.competitiveTitle')}
                         variant="flat"
-                        sx={{ bgcolor: surfacePrimary, mb: 'var(--msqdx-spacing-sm)' }}
+                        sx={{ bgcolor: surfacePrimary, mb: 'var(--msqdx-spacing-sm)', ...amcMobileFlushCardSx() }}
                         borderRadius="lg"
                     >
                         {(competitiveHistory.length > 0 || hasMultiModelFromSource) && (
                             <Box sx={{ borderBottom: tableBorder, mb: 0 }}>
-                                {runTabs.length > 0 && (
-                                    <Box sx={{ borderBottom: runTabs.length > 1 ? tableBorder : 'none' }}>
-                                        <MsqdxTabs
-                                            value={effectiveRunTabIndex}
-                                            onChange={(v) => {
-                                                const i = Number(v);
-                                                if (i === 0) setSelectedCompetitiveRunId(null);
-                                                else if (competitiveHistory[i - 1]) setSelectedCompetitiveRunId(competitiveHistory[i - 1]!.id);
-                                            }}
-                                            tabs={runTabs}
-                                        />
-                                    </Box>
-                                )}
+                                <GeoEeatCompetitiveRunSelector
+                                    options={runOptions}
+                                    selectedIndex={effectiveRunTabIndex}
+                                    selectLabel={t('geoEeat.competitiveRunSelectLabel')}
+                                    onChange={(index, runId) => setSelectedCompetitiveRunId(runId)}
+                                />
                                 {historyLoading && selectedCompetitiveRunId != null && (
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 'var(--msqdx-spacing-xs)', py: 'var(--msqdx-spacing-xs)', px: 'var(--msqdx-spacing-sm)' }}>
                                         <CircularProgress size={16} sx={{ color: MSQDX_BRAND_PRIMARY.green }} />
@@ -560,13 +605,11 @@ export default function GeoEeatResultPage() {
                         )}
                         {hasMultiModelFromSource && competitiveModelsFromSource.length > 0 && (
                             <Box sx={{ borderBottom: tableBorder, mt: 'var(--msqdx-spacing-sm)' }}>
-                                <MsqdxTabs
-                                    value={modelIndex}
-                                    onChange={(v) => setCompetitiveModelIndex(Number(v))}
-                                    tabs={competitiveModelsFromSource.map((model, i) => ({
-                                        label: compact ? shortenCompetitiveModelLabel(model) : model,
-                                        value: i,
-                                    }))}
+                                <GeoEeatCompetitiveModelSelector
+                                    models={competitiveModelsFromSource}
+                                    modelIndex={modelIndex}
+                                    onChange={setCompetitiveModelIndex}
+                                    selectLabel={t('geoEeat.competitiveModelSelectLabel')}
                                 />
                             </Box>
                         )}
@@ -612,7 +655,7 @@ export default function GeoEeatResultPage() {
                                     {t('geoEeat.competitivePerQuery')}
                                 </MsqdxTypography>
                                 <MsqdxAccordion
-                                    allowMultiple
+                                    allowMultiple={!compact}
                                     size="small"
                                     borderRadius="md"
                                     sx={{
@@ -625,6 +668,7 @@ export default function GeoEeatResultPage() {
                                         <MsqdxAccordionItem
                                             key={run.queryId ?? runIdx}
                                             id={`query-${runIdx}`}
+                                            defaultExpanded={compact ? runIdx === 0 : undefined}
                                             summary={
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 'var(--msqdx-spacing-xs)', flexWrap: 'wrap' }}>
                                                     <MsqdxTypography variant="caption" sx={{ fontWeight: 600 }}>
@@ -665,36 +709,15 @@ export default function GeoEeatResultPage() {
                                                 <MsqdxTypography variant="caption" sx={{ color: textTertiary, display: 'block', mb: 'var(--msqdx-spacing-xxs)' }}>
                                                     {t('geoEeat.citedDomains')}:
                                                 </MsqdxTypography>
-                                                {run.citations && run.citations.length > 0 ? (
-                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--msqdx-spacing-xxs)', alignItems: 'center' }}>
-                                                        {[...run.citations]
-                                                            .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-                                                            .map((c, cIdx) => (
-                                                                <Box
-                                                                    key={cIdx}
-                                                                    sx={{
-                                                                        display: 'inline-flex',
-                                                                        alignItems: 'center',
-                                                                        gap: 'var(--msqdx-spacing-xxs)',
-                                                                        px: 'var(--msqdx-spacing-xs)',
-                                                                        py: 'var(--msqdx-spacing-xxs)',
-                                                                        borderRadius: `${radiusSm}px`,
-                                                                        bgcolor: surfacePrimary,
-                                                                        border: tableBorder,
-                                                                    }}
-                                                                >
-                                                                    <MsqdxTypography variant="caption" sx={{ fontWeight: 600, color: textTertiary }}>
-                                                                        {t('geoEeat.positionShort')} {c.position ?? cIdx + 1}
-                                                                    </MsqdxTypography>
-                                                                    <MsqdxChip size="small" label={c.domain} sx={{ height: 22 }} />
-                                                                </Box>
-                                                            ))}
-                                                    </Box>
-                                                ) : (
-                                                    <MsqdxTypography variant="caption" sx={{ fontStyle: 'italic', color: textTertiary }}>
-                                                        {t('geoEeat.noCitations')}
-                                                    </MsqdxTypography>
-                                                )}
+                                                <GeoEeatQueryCitationList
+                                                    citations={run.citations ?? []}
+                                                    positionLabel={(pos) => `${t('geoEeat.positionShort')} ${pos}`}
+                                                    noCitationsLabel={t('geoEeat.noCitations')}
+                                                    radiusSm={radiusSm}
+                                                    tableBorder={tableBorder}
+                                                    surfacePrimary={surfacePrimary}
+                                                    textTertiary={textTertiary}
+                                                />
                                             </Box>
                                         </MsqdxAccordionItem>
                                     ))}
@@ -707,10 +730,19 @@ export default function GeoEeatResultPage() {
             </Box>
 
             {payload && (!payload.pages || payload.pages.length === 0) && !hasCompetitive && !hasMultiModelFromSource && (
-                <MsqdxTypography variant="body2" color="text.secondary">
+                <MsqdxTypography variant="body2" color="text.secondary" sx={{ px: { xs: 'var(--msqdx-spacing-md)', md: 0 } }}>
                     {t('geoEeat.noResultsDisplay')}
                 </MsqdxTypography>
             )}
+
+            <GeoEeatMobileActionBar
+                jobId={jobId}
+                canRerunCompetitive={Boolean(canRerunCompetitive)}
+                rerunLoading={rerunLoading}
+                rerunLabel={t('geoEeat.rerunCompetitiveButton')}
+                rerunRunningLabel={t('geoEeat.rerunCompetitiveRunning')}
+                onRerun={handleRerunCompetitive}
+            />
         </Box>
     );
 }

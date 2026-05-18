@@ -185,6 +185,8 @@ export const APP_LAYOUT_INNER_BORDER_WIDTH_PX = 3;
 export const AMC_ADMIN_NAV_DRAWER_Z_INDEX = 100_002;
 /** Tooltips on locked nav items: above drawer and AppShell menu button (100_003). */
 export const AMC_ADMIN_NAV_TOOLTIP_Z_INDEX = 100_004;
+/** GEO E-E-A-T sticky mobile action bar (share / rerun). */
+export const AMC_GEO_MOBILE_ACTION_BAR_Z_INDEX = 100_005;
 
 // ─── API Routes ────────────────────────────────────────────────────────────
 /** Base path for API URLs (e.g. '' or '/checkion' when app is under subpath). Use for client-side fetch. */

@@ -39,10 +39,9 @@ export function GeoEeatPageToolbar({
     <MsqdxButton
       variant="outlined"
       size="small"
-      fullWidth={compact}
       onClick={onRerun}
       disabled={rerunLoading}
-      sx={{ minWidth: compact ? undefined : rerunLoading ? 140 : undefined }}
+      sx={{ minWidth: rerunLoading ? 140 : undefined }}
     >
       {rerunLoading ? (
         <>
@@ -66,27 +65,24 @@ export function GeoEeatPageToolbar({
   );
 
   return (
-    <Box sx={{ mb: 2 }}>
-      <MsqdxTypography variant="h5" sx={{ fontWeight: 700, mb: compact ? 1.5 : 0 }}>
-        {title}
-      </MsqdxTypography>
+    <Box sx={{ mb: 2, px: { xs: 'var(--msqdx-spacing-md)', md: 0 } }}>
       {compact ? (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, alignItems: 'stretch' }}>
-            {rerunButton}
-            {share}
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
-            {addToProject}
-            <Link href={PATH_SCAN} style={{ textDecoration: 'none', marginLeft: 'auto' }}>
-              <MsqdxButton variant="text" size="small">
-                {backLabel}
-              </MsqdxButton>
-            </Link>
-          </Box>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+          <MsqdxTypography variant="h5" sx={{ fontWeight: 700, flex: 1, minWidth: 0 }}>
+            {title}
+          </MsqdxTypography>
+          <Link href={PATH_SCAN} style={{ textDecoration: 'none', flexShrink: 0 }}>
+            <MsqdxButton variant="text" size="small">
+              {backLabel}
+            </MsqdxButton>
+          </Link>
         </Box>
       ) : (
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 1 }}>
+        <>
+      <MsqdxTypography variant="h5" sx={{ fontWeight: 700, mb: 0 }}>
+        {title}
+      </MsqdxTypography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap', gap: 1, mt: 1 }}>
           {rerunButton}
           {addToProject}
           {share}
@@ -96,6 +92,7 @@ export function GeoEeatPageToolbar({
             </MsqdxButton>
           </Link>
         </Box>
+        </>
       )}
     </Box>
   );

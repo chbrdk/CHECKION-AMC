@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { isAmcLitePublicPath, shouldRedirectHomeToScan } from '@/lib/amc-lite';
-import { getAppBasePath, PATH_SCAN, PATH_RESULTS, PATH_SETTINGS, PATH_LOGIN, PATH_REGISTER } from '@/lib/constants';
+import {
+  getAppBasePath,
+  PATH_SCAN,
+  PATH_RESULTS,
+  PATH_SETTINGS,
+  PATH_GEO_EEAT,
+  PATH_LOGIN,
+  PATH_REGISTER,
+} from '@/lib/constants';
 
-/** AMC fork: scan + results + settings + auth (see lib/amc-lite.ts). */
-const protectedPaths = [PATH_SCAN, PATH_RESULTS, PATH_SETTINGS];
+/** AMC fork: scan + results + GEO/E-E-A-T + settings + auth (see lib/amc-lite.ts). */
+const protectedPaths = [PATH_SCAN, PATH_RESULTS, PATH_GEO_EEAT, PATH_SETTINGS];
 const authPaths = [PATH_LOGIN, PATH_REGISTER];
 
 const SESSION_COOKIES = ['authjs.session-token', '__Secure-authjs.session-token'];

@@ -28,7 +28,7 @@ git merge upstream/main
 - **Registrierung:** `/register` mit **Name**, **E-Mail**, **Unternehmen**, **Passwort** und verpflichtendem **Marketing-Opt-in**. Nach erfolgreicher Registrierung automatischer Login → `/scan`. Gäste ohne Session landen zuerst auf `/register`.
 - **Marketing-Einwilligung:** Tabelle `user_marketing_consents` lebt im **Haupt-Repo CHECKION** (Migration `0022`, `drizzle-kit push` beim CHECKION-Deploy). AMC schreibt nur Daten; kein eigenes Schema-Push. Siehe `CHECKION/knowledge/checkion-marketing-consents.md`.
 - **Navigation:** Alle Einträge sichtbar; nur **Scan** (Luppe) klickbar. Rest ausgegraut + Tooltip (`nav.amcLiteUpgradeTooltip`).
-- **Routen:** `proxy.ts` (Next.js 16) erlaubt `/scan`, `/results/*`, `/settings`, Login/Register, API. `/` → Redirect `/scan`. Alles andere → `/scan`. In der Sidebar sind **Scan** und **Einstellungen** klickbar.
+- **Routen:** `proxy.ts` (Next.js 16) erlaubt `/scan`, `/results/*`, `/geo-eeat/*` (GEO/E-E-A-T-Ergebnisse), `/settings`, Login/Register, API. `/` → Redirect `/scan`. Alles andere → `/scan`. In der Sidebar sind **Scan** und **Einstellungen** klickbar.
 - **DB:** Gleiche `DATABASE_URL` wie Haupt-CHECKION möglich.
 - **Schema:** Kein `drizzle-kit push` beim Start (nur mit `CHECKION_RUN_SCHEMA_PUSH=1`). Migrationen über Haupt-CHECKION.
 - **Sprache:** UI und AMC-API-Fehlertexte **ausschließlich Deutsch** (`lib/amc-locale.ts` erzwingt `de`; Cookie/Browser-`en` wird ignoriert).

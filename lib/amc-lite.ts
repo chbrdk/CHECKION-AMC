@@ -3,6 +3,7 @@
  */
 
 import {
+  PATH_GEO_EEAT,
   PATH_LOGIN,
   PATH_REGISTER,
   PATH_RESULTS,
@@ -50,6 +51,7 @@ const ALLOWED_PREFIXES = [
   PATH_SCAN,
   PATH_RESULTS,
   PATH_SETTINGS,
+  PATH_GEO_EEAT,
   '/api',
   '/_next',
 ] as const;

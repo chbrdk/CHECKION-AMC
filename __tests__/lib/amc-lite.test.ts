@@ -13,10 +13,11 @@ import {
 } from '@/lib/amc-lite';
 
 describe('amc-lite routes', () => {
-  it('allows scan, results, settings, auth, and api', () => {
+  it('allows scan, results, geo-eeat, settings, auth, and api', () => {
     expect(isAmcLitePublicPath('/scan')).toBe(true);
     expect(isAmcLitePublicPath('/scan/domain')).toBe(true);
     expect(isAmcLitePublicPath('/results/abc')).toBe(true);
+    expect(isAmcLitePublicPath('/geo-eeat/job-123')).toBe(true);
     expect(isAmcLitePublicPath('/settings')).toBe(true);
     expect(isAmcLitePublicPath('/login')).toBe(true);
     expect(isAmcLitePublicPath('/register')).toBe(true);
@@ -28,7 +29,7 @@ describe('amc-lite routes', () => {
     expect(isAmcLitePublicPath('/deep-scans')).toBe(false);
     expect(isAmcLitePublicPath('/developers')).toBe(false);
     expect(isAmcLitePublicPath('/domain/xyz')).toBe(false);
-    expect(isAmcLitePublicPath('/geo-eeat/job')).toBe(false);
+    expect(isAmcLitePublicPath('/journey-agent/job')).toBe(false);
   });
 
   it('enables scan and settings in sidebar nav', () => {

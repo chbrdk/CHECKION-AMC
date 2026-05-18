@@ -246,6 +246,7 @@ function ScanPage() {
                         return;
                     }
                     const jobId = data.jobId as string;
+                    setScanning(false);
                     router.push(pathGeoEeat(jobId, { focus: 'competitive' }));
                     return;
                 } else if (geoEeatRunCompetitive) {
@@ -305,6 +306,7 @@ function ScanPage() {
                         return;
                     }
                     const jobId = data.jobId as string;
+                    setScanning(false);
                     router.push(pathGeoEeat(jobId));
                     return;
                 }
@@ -322,6 +324,7 @@ function ScanPage() {
                     return;
                 }
                 const jobId = data.jobId as string;
+                setScanning(false);
                 router.push(pathGeoEeat(jobId));
                 return;
             }

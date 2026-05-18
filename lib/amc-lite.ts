@@ -23,6 +23,21 @@ export function isAmcGeoEeatQuickScanEnabled(): boolean {
   return false;
 }
 
+/** AMC demo: competitive benchmark always on — no opt-in checkbox. */
+export function isAmcGeoEeatCompetitiveSelectorEnabled(): boolean {
+  return false;
+}
+
+/** AMC demo: fixed WCAG 2.1 AA — no standard level dropdown on scan. */
+export function isAmcScanWcagStandardSelectorEnabled(): boolean {
+  return false;
+}
+
+/** AMC demo: fixed axe + HTML CodeSniffer — no engine picker on scan. */
+export function isAmcScanRunnerSelectorEnabled(): boolean {
+  return false;
+}
+
 /** Path prefixes allowed without redirect to /scan */
 const ALLOWED_PREFIXES = [
   PATH_LOGIN,

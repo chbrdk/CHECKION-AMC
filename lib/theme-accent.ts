@@ -20,6 +20,9 @@ export const THEME_ACCENT_CSS = 'var(--color-theme-accent, var(--color-secondary
 export const THEME_ACCENT_TINT_CSS = 'var(--color-theme-accent-tint, var(--color-secondary-dx-green-tint))';
 export const THEME_ACCENT_CONTRAST_CSS = 'var(--color-theme-accent-contrast, #000000)';
 
+/** Body copy on login/register (card area over brand-colored page background). */
+export const AUTH_PAGE_BODY_TEXT_CSS = 'var(--auth-logo-color, var(--color-primary-white))';
+
 /**
  * Innenkarten wie auf Projekt-Rankings (Keyword-Kacheln): 1px Rand in User-Akzentfarbe.
  */

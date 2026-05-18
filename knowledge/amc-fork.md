@@ -33,7 +33,9 @@ git merge upstream/main
 - **Schema:** Kein `drizzle-kit push` beim Start (nur mit `CHECKION_RUN_SCHEMA_PUSH=1`). Migrationen über Haupt-CHECKION.
 - **Sprache:** UI und AMC-API-Fehlertexte **ausschließlich Deutsch** (`lib/amc-locale.ts` erzwingt `de`; Cookie/Browser-`en` wird ignoriert).
 - **Projekte:** Kein Projekt-Dropdown auf `/scan`, keine `projectId` in Scan-Requests, kein „Zu Projekt hinzufügen“ auf Ergebnissen (`isAmcScanProjectSelectorEnabled()` → `false`).
-- **GEO/E-E-A-T:** Nur **vollständige Analyse** (URL + optional Wettbewerbs-Benchmark), kein Kurzmodus-Tab (`isAmcGeoEeatQuickScanEnabled()` → `false`).
+- **GEO/E-E-A-T:** Nur **vollständige Analyse** mit **immer aktivem** Competitive Benchmark (Konkurrenten/Fragen-Felder sichtbar), kein Kurzmodus-Tab und keine Checkbox „Sichtbarkeit in LLMs“ (`isAmcGeoEeatQuickScanEnabled()` / `isAmcGeoEeatCompetitiveSelectorEnabled()` → `false`).
+- **WCAG-Standard:** Kein Level-Dropdown auf `/scan`; Scans laufen fest mit **WCAG 2.1 AA** (`isAmcScanWcagStandardSelectorEnabled()` → `false`).
+- **Scan-Engines:** Kein Engine-Picker; fest **axe-core + HTML CodeSniffer** (`isAmcScanRunnerSelectorEnabled()` → `false`).
 
 ## Coolify (AMC)
 

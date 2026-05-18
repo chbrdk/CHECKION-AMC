@@ -16,6 +16,7 @@ import { MSQDX_TYPOGRAPHY } from '@msqdx/tokens';
 import { AuthBrandColorSelector } from '@/components/auth/AuthBrandColorSelector';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import { API_AUTH_REGISTER, PATH_LOGIN, PATH_SCAN } from '@/lib/constants';
+import { AUTH_PAGE_BODY_TEXT_CSS } from '@/lib/theme-accent';
 
 type RegisterResponse = {
     success?: boolean;
@@ -169,7 +170,7 @@ function RegisterForm() {
                             </MsqdxTypography>
                             <MsqdxTypography
                                 variant="body2"
-                                sx={{ mt: 'var(--msqdx-spacing-xs)', color: 'var(--color-text-secondary)' }}
+                                sx={{ mt: 'var(--msqdx-spacing-xs)', color: AUTH_PAGE_BODY_TEXT_CSS }}
                             >
                                 {t('auth.register.subtitle')}
                             </MsqdxTypography>
@@ -232,7 +233,7 @@ function RegisterForm() {
                                     />
                                     <MsqdxTypography
                                         variant="caption"
-                                        sx={{ display: 'block', mt: 0.5, color: 'var(--color-text-muted-on-light)' }}
+                                        sx={{ display: 'block', mt: 0.5, color: AUTH_PAGE_BODY_TEXT_CSS, opacity: 0.9 }}
                                     >
                                         {t('auth.register.passwordRequirements')}
                                     </MsqdxTypography>
@@ -244,17 +245,22 @@ function RegisterForm() {
                                             onChange={(e) => setMarketingOptIn(e.target.checked)}
                                             required
                                             sx={{
-                                                color: 'var(--color-theme-accent)',
-                                                '&.Mui-checked': { color: 'var(--color-theme-accent)' },
+                                                color: AUTH_PAGE_BODY_TEXT_CSS,
+                                                '&.Mui-checked': { color: AUTH_PAGE_BODY_TEXT_CSS },
                                             }}
                                         />
                                     }
                                     label={
-                                        <MsqdxTypography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
+                                        <MsqdxTypography variant="body2" sx={{ color: AUTH_PAGE_BODY_TEXT_CSS }}>
                                             {t('auth.register.marketingOptIn')}
                                         </MsqdxTypography>
                                     }
-                                    sx={{ alignItems: 'flex-start', mx: 0 }}
+                                    sx={{
+                                        alignItems: 'flex-start',
+                                        mx: 0,
+                                        color: AUTH_PAGE_BODY_TEXT_CSS,
+                                        '& .MuiFormControlLabel-label': { color: 'inherit' },
+                                    }}
                                 />
                                 <MsqdxButton
                                     type="submit"
@@ -276,9 +282,9 @@ function RegisterForm() {
                             </Stack>
                         </Box>
 
-                        <MsqdxTypography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
+                        <MsqdxTypography variant="body2" sx={{ color: AUTH_PAGE_BODY_TEXT_CSS }}>
                             {t('auth.register.prompt')}{' '}
-                            <Link href={PATH_LOGIN} style={{ color: 'inherit', fontWeight: 600 }}>
+                            <Link href={PATH_LOGIN} style={{ color: AUTH_PAGE_BODY_TEXT_CSS, fontWeight: 600 }}>
                                 {t('auth.register.link')}
                             </Link>
                         </MsqdxTypography>

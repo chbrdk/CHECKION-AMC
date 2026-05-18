@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+    AUTH_PAGE_BODY_TEXT_CSS,
     THEME_ACCENT_CSS,
     THEME_ACCENT_TINT_CSS,
     THEME_ACCENT_CONTRAST_CSS,
@@ -14,6 +15,7 @@ describe('theme-accent', () => {
         expect(THEME_ACCENT_CSS).toContain('--color-theme-accent');
         expect(THEME_ACCENT_TINT_CSS).toContain('--color-theme-accent-tint');
         expect(THEME_ACCENT_CONTRAST_CSS).toContain('--color-theme-accent-contrast');
+        expect(AUTH_PAGE_BODY_TEXT_CSS).toContain('--auth-logo-color');
     });
 
     it('MSQDX_BUTTON_THEME_ACCENT_SX targets contained/outlined/text', () => {

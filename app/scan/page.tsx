@@ -46,7 +46,13 @@ import { useStatusUi } from '@/components/status/StatusUiContext';
 import { ensureUrlWithScheme } from '@/lib/url-normalize';
 import { fetchOnceMoreOn5xx } from '@/lib/fetch-retry-5xx';
 import { extractHostname } from '@/lib/geo-eeat/suggest-parse';
-import { isAmcGeoEeatQuickScanEnabled, isAmcScanProjectSelectorEnabled } from '@/lib/amc-lite';
+import {
+    isAmcGeoEeatCompetitiveSelectorEnabled,
+    isAmcGeoEeatQuickScanEnabled,
+    isAmcScanProjectSelectorEnabled,
+    isAmcScanRunnerSelectorEnabled,
+    isAmcScanWcagStandardSelectorEnabled,
+} from '@/lib/amc-lite';
 import { resolveLaunchProjectId } from '@/lib/launch-project';
 
 const GEO_EEAT_QUICK_QUERY_MAX = 500;
@@ -80,6 +86,9 @@ function ScanPage() {
     const { singlePageScan, domainScan } = useStatusUi();
     const projectSelectorEnabled = isAmcScanProjectSelectorEnabled();
     const geoEeatQuickEnabled = isAmcGeoEeatQuickScanEnabled();
+    const geoEeatCompetitiveSelectorEnabled = isAmcGeoEeatCompetitiveSelectorEnabled();
+    const wcagStandardSelectorEnabled = isAmcScanWcagStandardSelectorEnabled();
+    const runnerSelectorEnabled = isAmcScanRunnerSelectorEnabled();
     const launchProjectId = projectSelectorEnabled ? searchParams.get('projectId') : null;
     const STANDARDS: { value: WcagStandard; label: string }[] = [
         { value: 'WCAG2A', label: t('standards.wcag2a') },
@@ -107,6 +116,7 @@ function ScanPage() {
     const [geoEeatQuickQuestion, setGeoEeatQuickQuestion] = useState('');
     const [geoEeatQuickCompetitor, setGeoEeatQuickCompetitor] = useState('');
     const [geoEeatCompetitive, setGeoEeatCompetitive] = useState(false);
+    const geoEeatRunCompetitive = geoEeatCompetitiveSelectorEnabled ? geoEeatCompetitive : true;
     const [geoEeatCompetitors, setGeoEeatCompetitors] = useState('');
     const [geoEeatQueries, setGeoEeatQueries] = useState('');
     const [geoEeatSuggesting, setGeoEeatSuggesting] = useState(false);
@@ -234,7 +244,7 @@ function ScanPage() {
                     const jobId = data.jobId as string;
                     router.push(pathGeoEeat(jobId, { focus: 'competitive' }));
                     return;
-                } else if (geoEeatCompetitive) {
+                } else if (geoEeatRunCompetitive) {
                     const body: { url: string; runCompetitive?: boolean; competitors?: string[]; queries?: string[]; projectId?: string | null } = { url: startUrl! };
                     body.runCompetitive = true;
                     body.competitors = geoEeatCompetitors.trim().split(/\n/).map((s) => s.trim()).filter(Boolean);
@@ -600,13 +610,15 @@ function ScanPage() {
                                 </>
                             ) : (
                                 <>
-                                    <MsqdxCheckboxField
-                                        label={t('scan.geoEeatCompetitiveLabel')}
-                                        options={[{ value: 'on', label: t('scan.geoEeatCompetitiveCheckbox') }]}
-                                        value={geoEeatCompetitive ? ['on'] : []}
-                                        onChange={(val) => setGeoEeatCompetitive(Array.isArray(val) && val.includes('on'))}
-                                    />
-                                    {geoEeatCompetitive && (
+                                    {geoEeatCompetitiveSelectorEnabled ? (
+                                        <MsqdxCheckboxField
+                                            label={t('scan.geoEeatCompetitiveLabel')}
+                                            options={[{ value: 'on', label: t('scan.geoEeatCompetitiveCheckbox') }]}
+                                            value={geoEeatCompetitive ? ['on'] : []}
+                                            onChange={(val) => setGeoEeatCompetitive(Array.isArray(val) && val.includes('on'))}
+                                        />
+                                    ) : null}
+                                    {geoEeatRunCompetitive && (
                                         <>
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                                                 <MsqdxButton
@@ -717,28 +729,48 @@ function ScanPage() {
                         </Box>
                     )}
 
-                    {/* WCAG Standard (Only for Single Page currently) */}
-                    <Box sx={{ minWidth: 200, opacity: scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' ? 0.5 : 1, pointerEvents: scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' ? 'none' : 'auto' }}>
-                        <MsqdxSelect
-                            label={t('scan.standardLabel')}
-                            value={standard}
-                            onChange={(e: SelectChangeEvent<unknown>) => setStandard(e.target.value as WcagStandard)}
-                            options={STANDARDS}
-                            disabled={scanning || scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat'}
-                            fullWidth
-                        />
-                    </Box>
+                    {wcagStandardSelectorEnabled ? (
+                        <Box
+                            sx={{
+                                minWidth: 200,
+                                opacity: scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' ? 0.5 : 1,
+                                pointerEvents:
+                                    scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' ? 'none' : 'auto',
+                            }}
+                        >
+                            <MsqdxSelect
+                                label={t('scan.standardLabel')}
+                                value={standard}
+                                onChange={(e: SelectChangeEvent<unknown>) => setStandard(e.target.value as WcagStandard)}
+                                options={STANDARDS}
+                                disabled={scanning || scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat'}
+                                fullWidth
+                            />
+                        </Box>
+                    ) : null}
 
-                    {/* Runners (Only for Single Page currently) */}
-                    <Box sx={{ minWidth: 200, pt: 0.5, opacity: scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' ? 0.5 : 1, pointerEvents: scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' ? 'none' : 'auto' }}>
-                        <MsqdxCheckboxField
-                            label={t('scan.enginesLabel')}
-                            options={RUNNERS.map(r => ({ value: r.value, label: r.label, disabled: scanning || scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' }))}
-                            value={selectedRunners}
-                            onChange={(val) => setSelectedRunners(val as Runner[])}
-                        // row -- Vertical might be better in this layout if we have multiple
-                        />
-                    </Box>
+                    {runnerSelectorEnabled ? (
+                        <Box
+                            sx={{
+                                minWidth: 200,
+                                pt: 0.5,
+                                opacity: scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' ? 0.5 : 1,
+                                pointerEvents:
+                                    scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat' ? 'none' : 'auto',
+                            }}
+                        >
+                            <MsqdxCheckboxField
+                                label={t('scan.enginesLabel')}
+                                options={RUNNERS.map((r) => ({
+                                    value: r.value,
+                                    label: r.label,
+                                    disabled: scanning || scanMode === 'deep' || scanMode === 'journey' || scanMode === 'geoEeat',
+                                }))}
+                                value={selectedRunners}
+                                onChange={(val) => setSelectedRunners(val as Runner[])}
+                            />
+                        </Box>
+                    ) : null}
 
                     {projectSelectorEnabled ? (
                         <Box sx={{ minWidth: 200 }}>

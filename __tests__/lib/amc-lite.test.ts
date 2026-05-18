@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   isAmcLiteNavHrefEnabled,
   isAmcLitePublicPath,
+  isAmcGeoEeatCompetitiveSelectorEnabled,
   isAmcGeoEeatQuickScanEnabled,
   isAmcScanProjectSelectorEnabled,
+  isAmcScanRunnerSelectorEnabled,
+  isAmcScanWcagStandardSelectorEnabled,
   normalizePathnameForAmcLite,
   shouldRedirectHomeToScan,
 } from '@/lib/amc-lite';
@@ -49,5 +52,17 @@ describe('amc-lite routes', () => {
 
   it('offers GEO/E-E-A-T full analysis only (no quick tab)', () => {
     expect(isAmcGeoEeatQuickScanEnabled()).toBe(false);
+  });
+
+  it('always runs GEO/E-E-A-T competitive benchmark (no opt-in checkbox)', () => {
+    expect(isAmcGeoEeatCompetitiveSelectorEnabled()).toBe(false);
+  });
+
+  it('hides WCAG standard selector on scan (fixed AA)', () => {
+    expect(isAmcScanWcagStandardSelectorEnabled()).toBe(false);
+  });
+
+  it('hides scan engine selector on scan (fixed axe + htmlcs)', () => {
+    expect(isAmcScanRunnerSelectorEnabled()).toBe(false);
   });
 });

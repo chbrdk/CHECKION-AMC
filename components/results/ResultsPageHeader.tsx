@@ -35,7 +35,7 @@ export function ResultsPageHeader({
         mb: 'var(--msqdx-spacing-sm)',
         bgcolor: 'var(--color-card-bg)',
         borderRadius: 'var(--msqdx-radius-lg, 12px)',
-        ...amcMobileFlushCardSx(),
+        ...amcMobileFlushCardSx,
         py: { xs: 'var(--msqdx-spacing-md)', md: 'var(--msqdx-spacing-md)' },
       }}
     >

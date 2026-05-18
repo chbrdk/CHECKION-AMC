@@ -588,7 +588,7 @@ export default function ResultsPage() {
             <MsqdxMoleculeCard
                 variant="flat"
                 borderRadius="lg"
-                sx={{ bgcolor: 'var(--color-card-bg)', ...amcMobileFlushCardSx(), py: { xs: 'var(--msqdx-spacing-md)', md: undefined } }}
+                sx={{ bgcolor: 'var(--color-card-bg)', ...amcMobileFlushCardSx, py: { xs: 'var(--msqdx-spacing-md)', md: undefined } }}
             >
             <Box sx={{ mb: 'var(--msqdx-spacing-md)', display: 'flex', alignItems: compact ? 'stretch' : 'center', gap: 1, flexDirection: compact ? 'column' : 'row' }}>
                 <InfoTooltip title={t('info.viewModes')} ariaLabel={t('common.info')} placement="bottom" />

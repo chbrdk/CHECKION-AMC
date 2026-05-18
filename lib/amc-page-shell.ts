@@ -13,8 +13,6 @@ export function amcMobileFlushPageShellSx(maxWidth: number | string): SxProps<Th
 }
 
 /** Inner padding for cards on flush mobile pages (content not edge-to-edge). */
-export function amcMobileFlushCardSx(): SxProps<Theme> {
-  return {
-    px: { xs: 'var(--msqdx-spacing-md)', md: 0 },
-  };
-}
+export const amcMobileFlushCardSx = {
+  px: { xs: 'var(--msqdx-spacing-md)', md: 0 },
+} as const;

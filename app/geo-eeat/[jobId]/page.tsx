@@ -308,7 +308,7 @@ export default function GeoEeatResultPage() {
                 <MsqdxMoleculeCard
                     title={t('geoEeat.onPageTitle')}
                     variant="flat"
-                    sx={{ bgcolor: 'var(--color-card-bg)', mb: 2, ...amcMobileFlushCardSx() }}
+                    sx={{ bgcolor: 'var(--color-card-bg)', mb: 2, ...amcMobileFlushCardSx }}
                     borderRadius="lg"
                 >
                     {payload.pages.map((page: GeoEeatPageResult, idx: number) => {
@@ -575,7 +575,7 @@ export default function GeoEeatResultPage() {
                     <MsqdxMoleculeCard
                         title={t('geoEeat.competitiveTitle')}
                         variant="flat"
-                        sx={{ bgcolor: surfacePrimary, mb: 'var(--msqdx-spacing-sm)', ...amcMobileFlushCardSx() }}
+                        sx={{ bgcolor: surfacePrimary, mb: 'var(--msqdx-spacing-sm)', ...amcMobileFlushCardSx }}
                         borderRadius="lg"
                     >
                         {(competitiveHistory.length > 0 || hasMultiModelFromSource) && (
@@ -668,7 +668,6 @@ export default function GeoEeatResultPage() {
                                         <MsqdxAccordionItem
                                             key={run.queryId ?? runIdx}
                                             id={`query-${runIdx}`}
-                                            defaultExpanded={compact ? runIdx === 0 : undefined}
                                             summary={
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 'var(--msqdx-spacing-xs)', flexWrap: 'wrap' }}>
                                                     <MsqdxTypography variant="caption" sx={{ fontWeight: 600 }}>

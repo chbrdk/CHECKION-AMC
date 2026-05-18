@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Menu, MenuItem } from '@mui/material';
 import { MsqdxTypography, MsqdxButton, MsqdxFormField } from '@msqdx/react';
 import { useI18n } from '@/components/i18n/I18nProvider';
+import { isAmcScanProjectSelectorEnabled } from '@/lib/amc-lite';
 import {
     apiProjectsList,
     apiProjectsCreate,
@@ -37,6 +38,8 @@ const ASSIGN_ENDPOINTS: Record<AddToProjectResourceType, (id: string) => string>
 };
 
 export function AddToProject({ resourceType, resourceId, currentProjectId, currentProjectName, onAssigned }: AddToProjectProps) {
+    if (!isAmcScanProjectSelectorEnabled()) return null;
+
     const { t } = useI18n();
     const [projects, setProjects] = useState<Array<{ id: string; name: string; domain: string | null }>>([]);
     const [loading, setLoading] = useState(false);

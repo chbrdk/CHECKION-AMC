@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { isAmcLitePublicPath, shouldRedirectHomeToScan } from '@/lib/amc-lite';
 import { getAppBasePath, PATH_SCAN, PATH_RESULTS, PATH_SETTINGS, PATH_LOGIN, PATH_REGISTER } from '@/lib/constants';
 
-/** AMC fork: scan + results + auth only (see lib/amc-lite.ts). */
+/** AMC fork: scan + results + settings + auth (see lib/amc-lite.ts). */
 const protectedPaths = [PATH_SCAN, PATH_RESULTS, PATH_SETTINGS];
 const authPaths = [PATH_LOGIN, PATH_REGISTER];
 

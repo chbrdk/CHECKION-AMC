@@ -4,8 +4,7 @@ import type { ReactNode } from 'react';
 import NextLink from 'next/link';
 import { Box, Tooltip } from '@mui/material';
 import { useI18n } from '@/components/i18n/I18nProvider';
-import { AMC_LITE_UPGRADE_TOOLTIP_KEY, normalizePathnameForAmcLite } from '@/lib/amc-lite';
-import { PATH_SCAN } from '@/lib/constants';
+import { AMC_LITE_UPGRADE_TOOLTIP_KEY, isAmcLiteNavHrefEnabled } from '@/lib/amc-lite';
 
 export type AmcLiteNavLinkProps = {
   href: string;
@@ -14,12 +13,7 @@ export type AmcLiteNavLinkProps = {
   rel?: string;
 };
 
-function isAmcLiteNavHrefEnabled(href: string): boolean {
-  const path = normalizePathnameForAmcLite(href);
-  return path === PATH_SCAN || path.startsWith(`${PATH_SCAN}/`);
-}
-
-/** Blocks navigation for non-scan routes; shows upgrade tooltip on locked items. */
+/** Blocks navigation for locked routes; shows upgrade tooltip on disabled nav items. */
 export function AmcLiteNavLink({ href, children, target, rel }: AmcLiteNavLinkProps) {
   const { t } = useI18n();
 

@@ -8,7 +8,8 @@ import { MsqdxButton } from '@msqdx/react';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import { AddToProject } from '@/components/AddToProject';
 import { SharePanel } from '@/components/SharePanel';
-import { PATH_HOME, apiScan } from '@/lib/constants';
+import { isAmcScanProjectSelectorEnabled } from '@/lib/amc-lite';
+import { PATH_HOME, PATH_SCAN, apiScan } from '@/lib/constants';
 import type { ScanResult } from '@/lib/types';
 
 /** Renders back to dashboard + AddToProject + SharePanel for use in the app header when on a results route. */
@@ -17,20 +18,21 @@ export function ResultsHeaderNav() {
     const router = useRouter();
     const { t } = useI18n();
     const id = typeof params.id === 'string' ? params.id : params.id?.[0] ?? null;
+    const showProjectSelector = isAmcScanProjectSelectorEnabled();
     const [projectId, setProjectId] = useState<string | null>(null);
 
     const refetchProjectId = useCallback(() => {
-        if (!id) return;
+        if (!id || !showProjectSelector) return;
         fetch(apiScan(id), { credentials: 'same-origin' })
             .then((r) => r.json())
             .then((d: ScanResult & { projectId?: string | null }) => setProjectId(d.projectId ?? null))
             .catch(() => setProjectId(null));
-    }, [id]);
+    }, [id, showProjectSelector]);
 
     useEffect(() => {
-        if (!id) return;
+        if (!id || !showProjectSelector) return;
         refetchProjectId();
-    }, [id, refetchProjectId]);
+    }, [id, showProjectSelector, refetchProjectId]);
 
     if (!id) return null;
 
@@ -46,7 +48,7 @@ export function ResultsHeaderNav() {
                 minWidth: 0,
             }}
         >
-            <Link href={PATH_HOME} style={{ textDecoration: 'none' }}>
+            <Link href={showProjectSelector ? PATH_HOME : PATH_SCAN} style={{ textDecoration: 'none' }}>
                 <MsqdxButton
                     variant="outlined"
                     size="small"
@@ -56,15 +58,17 @@ export function ResultsHeaderNav() {
                         '&:hover': { borderColor: 'currentColor', backgroundColor: 'rgba(0,0,0,0.06)' },
                     }}
                 >
-                    ← {t('results.dashboard')}
+                    ← {showProjectSelector ? t('results.dashboard') : t('nav.newScan')}
                 </MsqdxButton>
             </Link>
-            <AddToProject
-                resourceType="single"
-                resourceId={id}
-                currentProjectId={projectId}
-                onAssigned={refetchProjectId}
-            />
+            {showProjectSelector ? (
+                <AddToProject
+                    resourceType="single"
+                    resourceId={id}
+                    currentProjectId={projectId}
+                    onAssigned={refetchProjectId}
+                />
+            ) : null}
             <SharePanel resourceType="single" resourceId={id} labelNamespace="results" />
         </Box>
     );

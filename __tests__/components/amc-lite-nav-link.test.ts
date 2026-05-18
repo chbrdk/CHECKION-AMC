@@ -8,7 +8,7 @@ describe('AmcLiteNavLink', () => {
     expect(source).toContain('Tooltip');
     expect(source).toContain('AMC_LITE_UPGRADE_TOOLTIP_KEY');
     expect(source).toContain('cursor: \'not-allowed\'');
-    expect(source).toContain('PATH_SCAN');
+    expect(source).toContain('isAmcLiteNavHrefEnabled');
   });
 
   it('uses AmcLiteNavLink in Sidebar', () => {

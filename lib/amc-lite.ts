@@ -7,10 +7,16 @@ import {
   PATH_REGISTER,
   PATH_RESULTS,
   PATH_SCAN,
+  PATH_SETTINGS,
   getAppBasePath,
 } from '@/lib/constants';
 
 export const AMC_LITE_UPGRADE_TOOLTIP_KEY = 'nav.amcLiteUpgradeTooltip';
+
+/** AMC demo: no project picker on scan/results (projects nav disabled). */
+export function isAmcScanProjectSelectorEnabled(): boolean {
+  return false;
+}
 
 /** Path prefixes allowed without redirect to /scan */
 const ALLOWED_PREFIXES = [
@@ -18,9 +24,18 @@ const ALLOWED_PREFIXES = [
   PATH_REGISTER,
   PATH_SCAN,
   PATH_RESULTS,
+  PATH_SETTINGS,
   '/api',
   '/_next',
 ] as const;
+
+/** Sidebar / header links that are navigable in AMC (not upgrade-locked). */
+const ENABLED_NAV_PREFIXES = [PATH_SCAN, PATH_SETTINGS] as const;
+
+export function isAmcLiteNavHrefEnabled(href: string): boolean {
+  const path = normalizePathnameForAmcLite(href);
+  return ENABLED_NAV_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+}
 
 const ALLOWED_EXACT = new Set(['/favicon.ico', '/robots.txt', '/sitemap.xml']);
 
@@ -70,5 +85,5 @@ export const AMC_LITE_NAV_ENTRIES: AmcLiteNavEntry[] = [
 ];
 
 export const AMC_LITE_EXTERNAL_NAV_ENTRIES: AmcLiteNavEntry[] = [
-  { labelKey: 'nav.settings', path: '/settings', icon: 'settings', enabled: false },
+  { labelKey: 'nav.settings', path: PATH_SETTINGS, icon: 'settings', enabled: true },
 ];

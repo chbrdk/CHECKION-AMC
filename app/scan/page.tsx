@@ -46,6 +46,7 @@ import { useStatusUi } from '@/components/status/StatusUiContext';
 import { ensureUrlWithScheme } from '@/lib/url-normalize';
 import { fetchOnceMoreOn5xx } from '@/lib/fetch-retry-5xx';
 import { extractHostname } from '@/lib/geo-eeat/suggest-parse';
+import { isAmcScanProjectSelectorEnabled } from '@/lib/amc-lite';
 import { resolveLaunchProjectId } from '@/lib/launch-project';
 
 const GEO_EEAT_QUICK_QUERY_MAX = 500;
@@ -77,7 +78,8 @@ function ScanPage() {
     const { t } = useI18n();
     const { status: sessionStatus } = useSession();
     const { singlePageScan, domainScan } = useStatusUi();
-    const launchProjectId = searchParams.get('projectId');
+    const projectSelectorEnabled = isAmcScanProjectSelectorEnabled();
+    const launchProjectId = projectSelectorEnabled ? searchParams.get('projectId') : null;
     const STANDARDS: { value: WcagStandard; label: string }[] = [
         { value: 'WCAG2A', label: t('standards.wcag2a') },
         { value: 'WCAG2AA', label: t('standards.wcag2aa') },
@@ -113,7 +115,7 @@ function ScanPage() {
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
     useEffect(() => {
-        if (sessionStatus === 'loading') return;
+        if (!projectSelectorEnabled || sessionStatus === 'loading') return;
         let cancelled = false;
         void (async () => {
             try {
@@ -128,9 +130,10 @@ function ScanPage() {
         return () => {
             cancelled = true;
         };
-    }, [sessionStatus]);
+    }, [projectSelectorEnabled, sessionStatus]);
 
     useEffect(() => {
+        if (!projectSelectorEnabled) return;
         const nextProjectId = resolveLaunchProjectId(
             projects.map((project) => project.id),
             { currentProjectId: selectedProjectId, launchProjectId }
@@ -138,7 +141,7 @@ function ScanPage() {
         if (nextProjectId && nextProjectId !== selectedProjectId) {
             setSelectedProjectId(nextProjectId);
         }
-    }, [launchProjectId, projects, selectedProjectId]);
+    }, [projectSelectorEnabled, launchProjectId, projects, selectedProjectId]);
 
     useEffect(() => {
         void (async () => {
@@ -733,17 +736,20 @@ function ScanPage() {
                         />
                     </Box>
 
-                    {/* Project (optional) */}
-                    <Box sx={{ minWidth: 200 }}>
-                        <MsqdxSelect
-                            label={t('projects.optionalProject')}
-                            value={selectedProjectId ?? ''}
-                            onChange={(e: SelectChangeEvent<unknown>) => setSelectedProjectId((e.target.value as string) || null)}
-                            options={[{ value: '', label: '—' }, ...projects.map((p) => ({ value: p.id, label: p.name }))]}
-                            disabled={scanning}
-                            fullWidth
-                        />
-                    </Box>
+                    {projectSelectorEnabled ? (
+                        <Box sx={{ minWidth: 200 }}>
+                            <MsqdxSelect
+                                label={t('projects.optionalProject')}
+                                value={selectedProjectId ?? ''}
+                                onChange={(e: SelectChangeEvent<unknown>) =>
+                                    setSelectedProjectId((e.target.value as string) || null)
+                                }
+                                options={[{ value: '', label: '—' }, ...projects.map((p) => ({ value: p.id, label: p.name }))]}
+                                disabled={scanning}
+                                fullWidth
+                            />
+                        </Box>
+                    ) : null}
                 </Box>
 
 

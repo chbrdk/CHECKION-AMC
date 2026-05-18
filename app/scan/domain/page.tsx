@@ -16,6 +16,7 @@ import { MSQDX_SPACING } from '@msqdx/tokens';
 import type { DomainScanStatus } from '@/lib/types';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import { InfoTooltip } from '@/components/InfoTooltip';
+import { isAmcScanProjectSelectorEnabled } from '@/lib/amc-lite';
 import { apiScanDomainCreate, pathDomain, pathScanDomain } from '@/lib/constants';
 import { useStatusUi } from '@/components/status/StatusUiContext';
 
@@ -34,7 +35,8 @@ function ScanContent() {
 
     const startUrl = searchParams.get('url');
     const maxPagesParam = searchParams.get('maxPages');
-    const projectIdParam = searchParams.get('projectId');
+    const projectSelectorEnabled = isAmcScanProjectSelectorEnabled();
+    const projectIdParam = projectSelectorEnabled ? searchParams.get('projectId') : null;
     const scanIdParam = searchParams.get('scanId');
     const classifyPageTopicsParam = searchParams.get('classifyPageTopics') === 'true';
     const [classifyPageTopics, setClassifyPageTopics] = useState(classifyPageTopicsParam);

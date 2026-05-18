@@ -15,9 +15,9 @@ export const amcRegisterBodySchema = z.object({
   email: z.string().email('Gültige E-Mail-Adresse erforderlich'),
   company: z.string().trim().min(1, 'Unternehmensname ist erforderlich').max(200),
   password: amcPasswordSchema,
-  marketingOptIn: z.literal(true, {
-    errorMap: () => ({ message: 'Marketing-Einwilligung ist erforderlich' }),
-  }),
+  marketingOptIn: z
+    .boolean()
+    .refine((v) => v === true, 'Marketing-Einwilligung ist erforderlich'),
 });
 
 export type AmcRegisterBody = z.infer<typeof amcRegisterBodySchema>;

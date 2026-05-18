@@ -54,6 +54,7 @@ import {
     isAmcGeoEeatCompetitiveSelectorEnabled,
     isAmcGeoEeatQuickScanEnabled,
     isAmcScanProjectSelectorEnabled,
+    isAmcScanPageHeaderEnabled,
     isAmcScanRunnerSelectorEnabled,
     isAmcScanWcagStandardSelectorEnabled,
 } from '@/lib/amc-lite';
@@ -93,6 +94,7 @@ function ScanPage() {
     const geoEeatCompetitiveSelectorEnabled = isAmcGeoEeatCompetitiveSelectorEnabled();
     const wcagStandardSelectorEnabled = isAmcScanWcagStandardSelectorEnabled();
     const runnerSelectorEnabled = isAmcScanRunnerSelectorEnabled();
+    const scanPageHeaderEnabled = isAmcScanPageHeaderEnabled();
     const launchProjectId = projectSelectorEnabled ? searchParams.get('projectId') : null;
     const STANDARDS: { value: WcagStandard; label: string }[] = [
         { value: 'WCAG2A', label: t('standards.wcag2a') },
@@ -477,29 +479,46 @@ function ScanPage() {
     };
 
     return (
-        <Box sx={{ p: 'var(--msqdx-spacing-md)', maxWidth: 1600, mx: 'auto' }}>
-            {/* Header */}
-            <Box sx={{ mb: MSQDX_SPACING.scale.md }}>
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--msqdx-spacing-xs)', mb: MSQDX_SPACING.scale.xs }}>
-                    <MsqdxTypography
-                        variant="h4"
-                        sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}
+        <Box
+            sx={{
+                p: scanPageHeaderEnabled
+                    ? 'var(--msqdx-spacing-md)'
+                    : { xs: 'var(--msqdx-spacing-sm)', md: 'var(--msqdx-spacing-md)' },
+                maxWidth: 1600,
+                mx: 'auto',
+            }}
+        >
+            {scanPageHeaderEnabled && (
+                <Box sx={{ mb: { xs: MSQDX_SPACING.scale.sm, md: MSQDX_SPACING.scale.md } }}>
+                    <Box
+                        sx={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 'var(--msqdx-spacing-xs)',
+                            mb: MSQDX_SPACING.scale.xxs,
+                        }}
                     >
-                        {t('scan.title')}
+                        <MsqdxTypography
+                            variant="h4"
+                            sx={{ fontWeight: 700, letterSpacing: '-0.02em' }}
+                        >
+                            {t('scan.title')}
+                        </MsqdxTypography>
+                        <InfoTooltip title={t('info.scanPage')} ariaLabel={t('common.info')} />
+                    </Box>
+                    <MsqdxTypography
+                        variant="body2"
+                        sx={{ color: 'var(--color-text-muted-on-light)' }}
+                    >
+                        {t('scan.subtitle')}
                     </MsqdxTypography>
-                    <InfoTooltip title={t('info.scanPage')} ariaLabel={t('common.info')} />
                 </Box>
-                <MsqdxTypography
-                    variant="body2"
-                    sx={{ color: 'var(--color-text-muted-on-light)' }}
-                >
-                    {t('scan.subtitle')}
-                </MsqdxTypography>
-            </Box>
+            )}
 
             {/* Main Scan Card */}
             <MsqdxMoleculeCard
-                title={t('scan.configTitle')}
+                title={scanPageHeaderEnabled ? t('scan.configTitle') : t('scan.title')}
+                subtitle={scanPageHeaderEnabled ? undefined : t('scan.subtitle')}
                 headerActions={<InfoTooltip title={t('info.scanConfig')} ariaLabel={t('common.info')} />}
                 variant="flat"
                 borderRadius="lg"

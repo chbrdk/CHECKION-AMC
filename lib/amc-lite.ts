@@ -59,6 +59,11 @@ export function isAmcSettingsAboutEnabled(): boolean {
   return false;
 }
 
+/** AMC demo: no duplicate page header on /scan (title + subtitle live on the config card). */
+export function isAmcScanPageHeaderEnabled(): boolean {
+  return false;
+}
+
 /** Path prefixes allowed without redirect to /scan */
 const ALLOWED_PREFIXES = [
   PATH_LOGIN,

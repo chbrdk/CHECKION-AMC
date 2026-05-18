@@ -10,6 +10,7 @@ import {
   isAmcScanWcagStandardSelectorEnabled,
   isAmcSettingsAboutEnabled,
   isAmcSettingsApiTokensEnabled,
+  isAmcScanPageHeaderEnabled,
   isAmcSettingsScanConfigEnabled,
   normalizePathnameForAmcLite,
   shouldRedirectHomeToScan,
@@ -79,5 +80,9 @@ describe('amc-lite routes', () => {
     expect(isAmcSettingsScanConfigEnabled()).toBe(false);
     expect(isAmcSettingsApiTokensEnabled()).toBe(false);
     expect(isAmcSettingsAboutEnabled()).toBe(false);
+  });
+
+  it('merges scan page title into config card (no duplicate header)', () => {
+    expect(isAmcScanPageHeaderEnabled()).toBe(false);
   });
 });

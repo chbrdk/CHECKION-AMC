@@ -36,6 +36,7 @@ git merge upstream/main
 - **GEO/E-E-A-T:** Nur **vollständige Analyse** mit **immer aktivem** Competitive Benchmark (Konkurrenten/Fragen-Felder sichtbar), kein Kurzmodus-Tab und keine Checkbox „Sichtbarkeit in LLMs“ (`isAmcGeoEeatQuickScanEnabled()` / `isAmcGeoEeatCompetitiveSelectorEnabled()` → `false`).
 - **WCAG-Standard:** Kein Level-Dropdown auf `/scan`; Scans laufen fest mit **WCAG 2.1 AA** (`isAmcScanWcagStandardSelectorEnabled()` → `false`).
 - **Scan-Engines:** Kein Engine-Picker; fest **axe-core + HTML CodeSniffer** (`isAmcScanRunnerSelectorEnabled()` → `false`).
+- **Scan-Seite:** Kein separater Seitenkopf — **Neuer Scan** + Beschreibung stehen in der Konfigurationskarte (`isAmcScanPageHeaderEnabled()` → `false`), weniger Abstand auf Mobile.
 - **Einstellungen:** Nur Profil, Erscheinungsbild, Passwort und Abmelden — kein **Standard-Konfiguration**, kein **API-Zugang**, kein **Über CHECKION** (`isAmcSettingsScanConfigEnabled()` / `isAmcSettingsApiTokensEnabled()` / `isAmcSettingsAboutEnabled()` → `false`).
 
 ## Coolify (AMC)

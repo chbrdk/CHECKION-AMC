@@ -117,7 +117,10 @@ import { ResultsPageHeader } from '@/components/results/ResultsPageHeader';
 import { ResultsIssueFilters } from '@/components/results/ResultsIssueFilters';
 import { PageClassificationTierAccordion } from '@/components/results/PageClassificationTierAccordion';
 import { shortenResultsViewModeLabel, type ResultsViewMode } from '@/lib/results/view-modes';
+import { getResultsOverviewQuickLinkModes } from '@/lib/results/overview-quick-links';
 import { isAmcResultsViewModeSelectorOnMobileEnabled } from '@/lib/amc-lite';
+import { ResultsMobileViewNav } from '@/components/results/ResultsMobileViewNav';
+import { ResultsOverviewQuickLinks } from '@/components/results/ResultsOverviewQuickLinks';
 
 function UxCheckV2Content({ summary }: { summary: UxCheckV2Summary }) {
     const { structured, modelUsed, generatedAt } = summary;
@@ -520,6 +523,42 @@ export default function ResultsPage() {
         }));
     }, [compact, t]);
 
+    const overviewQuickLinks = useMemo(() => {
+        if (!result || !compact) return [];
+        const issueCount = result.stats.errors + result.stats.warnings + result.stats.notices;
+        const modes = getResultsOverviewQuickLinkModes({
+            hasLlmSummary: Boolean(result.llmSummary),
+            hasScreenshot: Boolean(result.screenshot),
+            hasUx: Boolean(result.ux),
+            hasStructure: (result.ux?.structureMap?.length ?? 0) > 0 || (result.pageIndex?.regions?.length ?? 0) > 0,
+            hasSeo: Boolean(result.seo || result.links),
+            hasInfra: Boolean(
+                result.geo || result.privacy || result.security || result.technicalInsights || result.contentFreshness
+            ),
+            hasGenerative: Boolean(result.generative),
+        });
+        const labelByMode = Object.fromEntries(viewModeTabs.map((tab) => [tab.value, tab.label])) as Record<string, string>;
+        return modes.map((mode) => ({
+            mode,
+            label:
+                mode === 'list'
+                    ? t('results.quickLinkIssues', { count: issueCount })
+                    : shortenResultsViewModeLabel(mode, labelByMode[mode] ?? mode),
+        }));
+    }, [result, compact, t, viewModeTabs]);
+
+    const renderOverviewQuickLinks = () =>
+        overviewQuickLinks.length > 0 ? (
+            <ResultsOverviewQuickLinks
+                title={t('results.quickLinksTitle')}
+                links={overviewQuickLinks}
+                onNavigate={(mode) => {
+                    setViewMode(mode);
+                    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+            />
+        ) : null;
+
     const renderScanVerifiedActions = () => {
         if (!result) return null;
         return (
@@ -591,6 +630,14 @@ export default function ResultsPage() {
                 borderRadius="lg"
                 sx={{ bgcolor: 'var(--color-card-bg)', ...amcMobileFlushCardSx, py: { xs: 'var(--msqdx-spacing-md)', md: undefined } }}
             >
+            {compact && !isAmcResultsViewModeSelectorOnMobileEnabled() && (
+                <ResultsMobileViewNav
+                    value={viewMode}
+                    onChange={(mode) => setViewMode(mode)}
+                    tabs={viewModeTabs.map((tab) => ({ value: tab.value as ResultsViewMode, label: tab.label }))}
+                    ariaLabel={t('results.viewModeSelectLabel')}
+                />
+            )}
             {(!compact || isAmcResultsViewModeSelectorOnMobileEnabled()) && (
                 <Box sx={{ mb: 'var(--msqdx-spacing-md)', display: 'flex', alignItems: 'center', gap: 1 }}>
                     <InfoTooltip title={t('info.viewModes')} ariaLabel={t('common.info')} placement="bottom" />
@@ -644,6 +691,7 @@ export default function ResultsPage() {
                                     <MiniStat label="Level AA" value={levelStats.AA} color={MSQDX_NEUTRAL[400]} />
                                     <MiniStat label="Level AAA" value={levelStats.AAA} color={MSQDX_NEUTRAL[400]} />
                                 </Box>
+                                {renderOverviewQuickLinks()}
                             </MsqdxMoleculeCard>
                             {result.pageClassification && (() => {
                                 const pc = result.pageClassification as { tagTiers?: Array<{ tag: string; tier: 1 | 2 | 3 | 4 | 5 }>; tags?: string[]; tier?: 1 | 2 | 3 | 4 | 5; shortSummary?: string };
@@ -739,6 +787,7 @@ export default function ResultsPage() {
                             <MiniStat label="Level AA" value={levelStats.AA} color={MSQDX_NEUTRAL[400]} />
                             <MiniStat label="Level AAA" value={levelStats.AAA} color={MSQDX_NEUTRAL[400]} />
                         </Box>
+                        {renderOverviewQuickLinks()}
                     </MsqdxMoleculeCard>
                 )
             )}

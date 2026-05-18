@@ -772,6 +772,8 @@
     "scanVerified": "Scan Verifiziert",
     "tabAll": "Alle",
     "viewModeSelectLabel": "Ansicht",
+    "quickLinksTitle": "Weitere Details",
+    "quickLinkIssues": "Alle Issues ({count})",
     "issueSeveritySelectLabel": "Schweregrad",
     "issueLevelSelectLabel": "WCAG-Level",
     "deviceSelectLabel": "Gerät",

@@ -64,7 +64,7 @@ export function isAmcScanPageHeaderEnabled(): boolean {
   return false;
 }
 
-/** AMC demo: no view-mode dropdown on mobile results (overview only; tabs from md up). */
+/** AMC demo: no view-mode dropdown on mobile results (chip nav + overview quick links; tabs from md up). */
 export function isAmcResultsViewModeSelectorOnMobileEnabled(): boolean {
   return false;
 }

@@ -772,6 +772,8 @@
     "scanVerified": "Scan Verified",
     "tabAll": "All",
     "viewModeSelectLabel": "View",
+    "quickLinksTitle": "More details",
+    "quickLinkIssues": "All issues ({count})",
     "issueSeveritySelectLabel": "Severity",
     "issueLevelSelectLabel": "WCAG level",
     "deviceSelectLabel": "Device",

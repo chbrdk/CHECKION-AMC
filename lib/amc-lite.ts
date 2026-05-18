@@ -44,6 +44,21 @@ export function isAmcScanRunnerSelectorEnabled(): boolean {
   return false;
 }
 
+/** AMC demo: no WCAG/runner defaults card on /settings (fixed at scan time). */
+export function isAmcSettingsScanConfigEnabled(): boolean {
+  return false;
+}
+
+/** AMC demo: no API token / MCP section on /settings. */
+export function isAmcSettingsApiTokensEnabled(): boolean {
+  return false;
+}
+
+/** AMC demo: hide “Über CHECKION” card on /settings. */
+export function isAmcSettingsAboutEnabled(): boolean {
+  return false;
+}
+
 /** Path prefixes allowed without redirect to /scan */
 const ALLOWED_PREFIXES = [
   PATH_LOGIN,

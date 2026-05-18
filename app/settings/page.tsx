@@ -24,6 +24,11 @@ import { BrandColorSelector } from '@/components/settings/BrandColorSelector';
 import { FORM_FIELD_ACCENT_SX } from '@/lib/theme-accent';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import { API_AUTH_PROFILE, API_AUTH_CHANGE_PASSWORD, API_AUTH_TOKENS, apiAuthTokenRevoke, PATH_LOGIN } from '@/lib/constants';
+import {
+    isAmcSettingsAboutEnabled,
+    isAmcSettingsApiTokensEnabled,
+    isAmcSettingsScanConfigEnabled,
+} from '@/lib/amc-lite';
 
 function useStandards(t: (k: string) => string): { value: WcagStandard; label: string; desc: string }[] {
     return useMemo(
@@ -61,6 +66,10 @@ export default function SettingsPage() {
     const { t, setLocale: setUiLocale } = useI18n();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
+
+    const scanConfigEnabled = isAmcSettingsScanConfigEnabled();
+    const apiTokensEnabled = isAmcSettingsApiTokensEnabled();
+    const aboutEnabled = isAmcSettingsAboutEnabled();
 
     const STANDARDS = useStandards(t);
     const RUNNERS = useRunners(t);
@@ -125,8 +134,8 @@ export default function SettingsPage() {
                 }
             })
             .catch(() => setProfile(null));
-        fetchApiTokens();
-    }, [status, session?.user?.id]);
+        if (apiTokensEnabled) fetchApiTokens();
+    }, [status, session?.user?.id, apiTokensEnabled]);
 
     const initials = useMemo(() => {
         const base = (name || profile?.email || session?.user?.email || 'A').trim();
@@ -436,6 +445,7 @@ export default function SettingsPage() {
                 </MsqdxCard>
 
                 {/* API-Tokens (MCP / programmatischer Zugriff) */}
+                {apiTokensEnabled && (
                 <MsqdxCard
                     variant="flat"
                     borderRadius="button"
@@ -530,6 +540,7 @@ export default function SettingsPage() {
                         </Stack>
                     )}
                 </MsqdxCard>
+                )}
 
                 {/* Session – Abmelden (1:1 AUDION) */}
                 <MsqdxCard
@@ -552,7 +563,9 @@ export default function SettingsPage() {
                 </MsqdxCard>
 
                 {/* Scan-Standards + Über CHECKION (bestehend) */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 'var(--msqdx-spacing-md)' }}>
+                {(scanConfigEnabled || aboutEnabled) && (
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: scanConfigEnabled && aboutEnabled ? '2fr 1fr' : '1fr' }, gap: 'var(--msqdx-spacing-md)' }}>
+                    {scanConfigEnabled && (
                     <Box>
                         <MsqdxMoleculeCard
                             title={t('settings.scanConfig.title')}
@@ -595,6 +608,8 @@ export default function SettingsPage() {
                             {saved ? t('settings.scanConfig.saved') : t('settings.scanConfig.saveCta')}
                         </MsqdxButton>
                     </Box>
+                    )}
+                    {aboutEnabled && (
                     <Box>
                         <MsqdxMoleculeCard title={t('settings.about.title')} headerActions={<InfoTooltip title={t('info.about')} ariaLabel={t('common.info')} />} variant="flat" borderRadius="lg" footerDivider={false} sx={{ bgcolor: 'var(--color-card-bg)', color: 'var(--color-text-on-light)' }}>
                             <MsqdxTypography variant="body2" sx={{ color: 'var(--color-text-muted-on-light)', lineHeight: 1.7 }}>
@@ -602,7 +617,9 @@ export default function SettingsPage() {
                             </MsqdxTypography>
                         </MsqdxMoleculeCard>
                     </Box>
+                    )}
                 </Box>
+                )}
             </Stack>
         </Box>
     );

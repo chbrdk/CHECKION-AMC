@@ -8,6 +8,9 @@ import {
   isAmcScanProjectSelectorEnabled,
   isAmcScanRunnerSelectorEnabled,
   isAmcScanWcagStandardSelectorEnabled,
+  isAmcSettingsAboutEnabled,
+  isAmcSettingsApiTokensEnabled,
+  isAmcSettingsScanConfigEnabled,
   normalizePathnameForAmcLite,
   shouldRedirectHomeToScan,
 } from '@/lib/amc-lite';
@@ -70,5 +73,11 @@ describe('amc-lite routes', () => {
 
   it('hides scan engine selector on scan (fixed axe + htmlcs)', () => {
     expect(isAmcScanRunnerSelectorEnabled()).toBe(false);
+  });
+
+  it('hides extended settings sections on /settings', () => {
+    expect(isAmcSettingsScanConfigEnabled()).toBe(false);
+    expect(isAmcSettingsApiTokensEnabled()).toBe(false);
+    expect(isAmcSettingsAboutEnabled()).toBe(false);
   });
 });

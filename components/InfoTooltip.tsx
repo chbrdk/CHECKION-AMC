@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { MsqdxTooltip, MsqdxButton, MsqdxIcon } from '@msqdx/react';
+import { CHECKION_MUI_COLORS } from '@/lib/checkion-mui-colors';
 
 export interface InfoTooltipProps {
   /** Tooltip text (use t('info.xxx') for i18n). */
@@ -29,8 +30,8 @@ export function InfoTooltip({ title, placement = 'top', ariaLabel = 'Information
             width: 28,
             height: 28,
             p: 0,
-            color: 'var(--color-text-muted-on-light)',
-            '&:hover': { color: 'var(--color-theme-accent, var(--color-secondary-dx-purple))' },
+            color: CHECKION_MUI_COLORS.textMutedOnLight,
+            '&:hover': { color: CHECKION_MUI_COLORS.themeAccent },
           }}
         >
           <MsqdxIcon name="Info" size="sm" />

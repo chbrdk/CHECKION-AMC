@@ -20,13 +20,13 @@ Updates von CHECKION holen:
 ```bash
 git fetch upstream
 git merge upstream/main
-# Konflikte typisch: Sidebar.tsx, middleware.ts, scripts/docker-entrypoint.sh, lib/amc-lite.ts
+# Konflikte typisch: Sidebar.tsx, proxy.ts, scripts/docker-entrypoint.sh, lib/amc-lite.ts
 ```
 
 ## AMC-spezifisches Verhalten
 
 - **Navigation:** Alle Einträge sichtbar; nur **Scan** (Luppe) klickbar. Rest ausgegraut + Tooltip (`nav.amcLiteUpgradeTooltip`).
-- **Routen:** `middleware.ts` erlaubt `/scan`, `/results/*`, Login/Register, API. `/` → Redirect `/scan`. Alles andere → `/scan`.
+- **Routen:** `proxy.ts` (Next.js 16) erlaubt `/scan`, `/results/*`, Login/Register, API. `/` → Redirect `/scan`. Alles andere → `/scan`.
 - **DB:** Gleiche `DATABASE_URL` wie Haupt-CHECKION möglich.
 - **Schema:** Kein `drizzle-kit push` beim Start (nur mit `CHECKION_RUN_SCHEMA_PUSH=1`). Migrationen über Haupt-CHECKION.
 
@@ -45,6 +45,6 @@ Repo in Coolify auf **CHECKION-AMC** umstellen (nicht CHECKION).
 ## Code-Stellen (nur im Fork)
 
 - `lib/amc-lite.ts` — Routen-Allowlist
-- `middleware.ts`
+- `proxy.ts`
 - `components/AmcLiteNavLink.tsx`, `components/Sidebar.tsx`
 - `scripts/docker-entrypoint.sh`

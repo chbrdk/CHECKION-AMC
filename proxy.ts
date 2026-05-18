@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getAppBasePath, PATH_SCAN, PATH_RESULTS, PATH_DOMAIN, PATH_SETTINGS, PATH_LOGIN, PATH_REGISTER } from '@/lib/constants';
+import { isAmcLitePublicPath, shouldRedirectHomeToScan } from '@/lib/amc-lite';
+import { getAppBasePath, PATH_SCAN, PATH_RESULTS, PATH_SETTINGS, PATH_LOGIN, PATH_REGISTER } from '@/lib/constants';
 
-const protectedPaths = [PATH_SCAN, PATH_RESULTS, PATH_DOMAIN, PATH_SETTINGS];
+/** AMC fork: scan + results + auth only (see lib/amc-lite.ts). */
+const protectedPaths = [PATH_SCAN, PATH_RESULTS, PATH_SETTINGS];
 const authPaths = [PATH_LOGIN, PATH_REGISTER];
 
 const SESSION_COOKIES = ['authjs.session-token', '__Secure-authjs.session-token'];
@@ -18,6 +20,13 @@ function hasSessionCookie(req: NextRequest): boolean {
     return SESSION_COOKIES.some(name => req.cookies.has(name));
 }
 
+function redirectToScan(req: NextRequest): NextResponse {
+    const basePath = getAppBasePath();
+    const url = req.nextUrl.clone();
+    url.pathname = `${basePath || ''}${PATH_SCAN}`;
+    return NextResponse.redirect(url);
+}
+
 export function proxy(req: NextRequest) {
     const { pathname, search } = req.nextUrl;
     const basePath = getAppBasePath();
@@ -27,17 +36,25 @@ export function proxy(req: NextRequest) {
 
     if (normalizedPath.startsWith('/api/')) return NextResponse.next();
 
+    if (shouldRedirectHomeToScan(pathname)) {
+        return redirectToScan(req);
+    }
+
+    if (!isAmcLitePublicPath(pathname)) {
+        return redirectToScan(req);
+    }
+
     if (isAuthPath(normalizedPath)) {
         if (hasSession) {
             const url = req.nextUrl.clone();
-            url.pathname = `${basePath || ''}/`;
+            url.pathname = `${basePath || ''}${PATH_SCAN}`;
             url.search = '';
             return NextResponse.redirect(url);
         }
         return NextResponse.next();
     }
 
-    if ((isProtected(normalizedPath) || normalizedPath === '/') && !hasSession) {
+    if (isProtected(normalizedPath) && !hasSession) {
         const loginUrl = req.nextUrl.clone();
         loginUrl.pathname = `${basePath || ''}${PATH_LOGIN}`;
         loginUrl.search = '';

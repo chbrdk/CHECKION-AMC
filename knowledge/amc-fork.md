@@ -37,6 +37,7 @@ git merge upstream/main
 - **WCAG-Standard:** Kein Level-Dropdown auf `/scan`; Scans laufen fest mit **WCAG 2.1 AA** (`isAmcScanWcagStandardSelectorEnabled()` → `false`).
 - **Scan-Engines:** Kein Engine-Picker; fest **axe-core + HTML CodeSniffer** (`isAmcScanRunnerSelectorEnabled()` → `false`).
 - **Scan-Seite:** Kein separater Seitenkopf — **Neuer Scan** + Beschreibung stehen in der Konfigurationskarte (`isAmcScanPageHeaderEnabled()` → `false`). Auf Mobile kein horizontales Padding (`isAmcMobileMainFlushHorizontal()` für `/scan` und `/geo-eeat/*`, siehe `lib/amc-page-shell.ts`).
+- **GEO-Ergebnisse (Mobile):** Toolbar stapelt Aktionen unter `md`; sticky Sprungnavigation On-Page ↔ Competitive; Competitive-Metriken vertikal; Modell-Tabs gekürzt (`lib/geo-eeat/model-label.ts`); Positionsdiagramm/Tabelle nur ab `md` (Hinweistext auf Mobile); E-E-A-T-Balken volle Breite; Accordion-Fragen mit 2-Zeilen-Clamping.
 - **Einstellungen:** Nur Profil, Erscheinungsbild, Passwort und Abmelden — kein **Standard-Konfiguration**, kein **API-Zugang**, kein **Über CHECKION** (`isAmcSettingsScanConfigEnabled()` / `isAmcSettingsApiTokensEnabled()` / `isAmcSettingsAboutEnabled()` → `false`).
 
 ## Coolify (AMC)
@@ -64,4 +65,5 @@ Repo in Coolify auf **CHECKION-AMC** umstellen (nicht CHECKION).
 - `app/register/page.tsx`, `app/api/auth/register/route.ts`
 - `proxy.ts`
 - `components/AmcLiteNavLink.tsx`, `components/Sidebar.tsx`
+- `components/geo-eeat/*`, `lib/geo-eeat/model-label.ts`, `lib/amc-page-shell.ts` — GEO-Ergebnisse Mobile-UX
 - `scripts/docker-entrypoint.sh`

@@ -1237,6 +1237,7 @@
     "competitiveHistoryLoading": "Loading runs…",
     "noResultsDisplay": "No results to display.",
     "llmUnavailableHint": "E-E-A-T and GEO fitness scoring by AI was not run (e.g. OPENAI_API_KEY not set or error). Only the technical signals above are available.",
+    "positionDiagramMobileHint": "Chart and table are available from tablet width upward — see Share of Voice below on mobile.",
     "positionDiagramTitle": "Position per question and LLM",
     "positionDiagramDescription": "For each question, the rank of your domain in each model's answer is shown (1 = best).",
     "positionDiagramYLabel": "Position",

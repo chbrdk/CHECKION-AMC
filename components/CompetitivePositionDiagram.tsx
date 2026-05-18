@@ -12,7 +12,7 @@ import {
     ResponsiveContainer,
     Cell,
 } from 'recharts';
-import { Box, alpha } from '@mui/material';
+import { Box, alpha, useMediaQuery, useTheme } from '@mui/material';
 import { MsqdxTypography } from '@msqdx/react';
 import { MSQDX_BRAND_PRIMARY, MSQDX_SPACING, MSQDX_NEUTRAL, MSQDX_THEME } from '@msqdx/tokens';
 import type { CompetitiveBenchmarkResult } from '@/lib/types';
@@ -51,6 +51,8 @@ export function CompetitivePositionDiagram({
     targetUrl,
     t,
 }: CompetitivePositionDiagramProps) {
+    const theme = useTheme();
+    const showChart = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true });
     const targetDomain = useMemo(() => extractHostname(targetUrl), [targetUrl]);
     const { rows, modelIds } = useMemo(
         () => buildPositionMatrix(competitiveByModel, targetDomain),
@@ -86,7 +88,16 @@ export function CompetitivePositionDiagram({
                 {t('geoEeat.positionDiagramDescription')}
             </MsqdxTypography>
 
-            <Box sx={{ width: '100%', height: 320, mb: 'var(--msqdx-spacing-md)' }}>
+            {!showChart && (
+                <MsqdxTypography
+                    variant="caption"
+                    sx={{ color: textTertiary, display: 'block', mb: 'var(--msqdx-spacing-sm)' }}
+                >
+                    {t('geoEeat.positionDiagramMobileHint')}
+                </MsqdxTypography>
+            )}
+
+            <Box sx={{ display: showChart ? 'block' : 'none', width: '100%', height: 320, mb: 'var(--msqdx-spacing-md)' }}>
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                         data={rows}
@@ -167,7 +178,7 @@ export function CompetitivePositionDiagram({
                 </ResponsiveContainer>
             </Box>
 
-            <Box sx={{ overflowX: 'auto' }}>
+            <Box sx={{ display: showChart ? 'block' : 'none', overflowX: 'auto' }}>
                 <MsqdxTypography
                     variant="caption"
                     sx={{ fontWeight: 600, color: textTertiary, display: 'block', mb: 'var(--msqdx-spacing-xxs)' }}

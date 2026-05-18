@@ -1237,6 +1237,7 @@
     "competitiveHistoryLoading": "Lade Durchläufe…",
     "noResultsDisplay": "Keine Ergebnisse zum Anzeigen.",
     "llmUnavailableHint": "E-E-A-T- und GEO-Fitness-Bewertung per KI wurden nicht durchgeführt (z. B. OPENAI_API_KEY nicht gesetzt oder Fehler). Nur die technischen Signale oben sind verfügbar.",
+    "positionDiagramMobileHint": "Diagramm und Tabelle sind ab Tablet-Breite verfügbar — die Übersicht mit Share of Voice findest du unten.",
     "positionDiagramTitle": "Platzierung pro Frage und LLM",
     "positionDiagramDescription": "Für jede Frage wird angezeigt, auf welchem Platz deine Domain bei welchem Modell genannt wurde (1 = beste Platzierung).",
     "positionDiagramYLabel": "Platz",

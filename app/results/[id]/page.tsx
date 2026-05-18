@@ -114,7 +114,6 @@ import { resultsIssuesOneBasedPageForFilteredIndex } from '@/lib/results-issues-
 import { amcMobileFlushCardSx, amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
 import { AmcResponsiveTabs } from '@/components/amc/AmcResponsiveTabs';
 import { ResultsPageHeader } from '@/components/results/ResultsPageHeader';
-import { ResultsMobileActionBar } from '@/components/results/ResultsMobileActionBar';
 import { ResultsIssueFilters } from '@/components/results/ResultsIssueFilters';
 import { shortenResultsViewModeLabel, type ResultsViewMode } from '@/lib/results/view-modes';
 
@@ -520,7 +519,7 @@ export default function ResultsPage() {
     }, [compact, t]);
 
     const renderScanVerifiedActions = () => {
-        if (compact || !result) return null;
+        if (!result) return null;
         return (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
                 <MsqdxButton variant="outlined" size="small" disabled={pdfExporting} onClick={handlePdfExport} startIcon={<MsqdxIcon name="Download" size="sm" />}>
@@ -1448,17 +1447,6 @@ export default function ResultsPage() {
                 </>
             )}
             </MsqdxMoleculeCard>
-
-            <ResultsMobileActionBar
-                pdfExporting={pdfExporting}
-                pdfLabel={t('results.pdfExport')}
-                pdfCreatingLabel={t('results.pdfCreating')}
-                onPdfExport={handlePdfExport}
-                currentDevice={result.device}
-                relatedScans={relatedScans}
-                onSelectDevice={(scanId) => router.push(pathResults(scanId))}
-                deviceSelectLabel={t('results.deviceSelectLabel')}
-            />
         </Box>
             )}
         </Box>

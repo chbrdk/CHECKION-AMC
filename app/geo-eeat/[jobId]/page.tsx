@@ -19,7 +19,7 @@ import { GeoEeatCompetitiveMetricRow } from '@/components/geo-eeat/GeoEeatCompet
 import { GeoEeatPageToolbar } from '@/components/geo-eeat/GeoEeatPageToolbar';
 import { GeoEeatSectionJumpNav } from '@/components/geo-eeat/GeoEeatSectionJumpNav';
 import type { GeoEeatIntensiveResult, GeoEeatPageResult, CompetitiveBenchmarkResult } from '@/lib/types';
-import { amcMobileFlushCardSx, amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
+import { amcMobileActionBarPaddingSx, amcMobileFlushCardSx, amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
 import { buildCompetitiveRunOptions, competitiveRunIndexFromSelection } from '@/lib/geo-eeat/competitive-run-options';
 import { GeoEeatCollapsibleChips } from '@/components/geo-eeat/GeoEeatCollapsibleChips';
 import { GeoEeatCompetitiveModelSelector } from '@/components/geo-eeat/GeoEeatCompetitiveModelSelector';
@@ -275,7 +275,7 @@ export default function GeoEeatResultPage() {
     };
 
     return (
-        <Box sx={amcMobileFlushPageShellSx(maxWidth)}>
+        <Box sx={{ ...amcMobileFlushPageShellSx(maxWidth), ...amcMobileActionBarPaddingSx }}>
             <GeoEeatPageToolbar
                 title={t('geoEeat.title')}
                 backLabel={t('geoEeat.backToScan')}

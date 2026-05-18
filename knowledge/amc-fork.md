@@ -32,7 +32,8 @@ git merge upstream/main
 - **DB:** Gleiche `DATABASE_URL` wie Haupt-CHECKION möglich.
 - **Schema:** Kein `drizzle-kit push` beim Start (nur mit `CHECKION_RUN_SCHEMA_PUSH=1`). Migrationen über Haupt-CHECKION.
 - **Sprache:** UI und AMC-API-Fehlertexte **ausschließlich Deutsch** (`lib/amc-locale.ts` erzwingt `de`; Cookie/Browser-`en` wird ignoriert).
-- **Projekte:** Kein Projekt-Dropdown auf `/scan`, keine `projectId` in Scan-Requests, kein „Zu Projekt hinzufügen“ auf Ergebnissen (`isAmcScanProjectSelectorEnabled()` in `lib/amc-lite.ts` → `false`).
+- **Projekte:** Kein Projekt-Dropdown auf `/scan`, keine `projectId` in Scan-Requests, kein „Zu Projekt hinzufügen“ auf Ergebnissen (`isAmcScanProjectSelectorEnabled()` → `false`).
+- **GEO/E-E-A-T:** Nur **vollständige Analyse** (URL + optional Wettbewerbs-Benchmark), kein Kurzmodus-Tab (`isAmcGeoEeatQuickScanEnabled()` → `false`).
 
 ## Coolify (AMC)
 

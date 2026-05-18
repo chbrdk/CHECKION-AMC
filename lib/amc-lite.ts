@@ -18,6 +18,11 @@ export function isAmcScanProjectSelectorEnabled(): boolean {
   return false;
 }
 
+/** AMC demo: GEO/E-E-A-T only as full analysis (no quick competitive-only tab). */
+export function isAmcGeoEeatQuickScanEnabled(): boolean {
+  return false;
+}
+
 /** Path prefixes allowed without redirect to /scan */
 const ALLOWED_PREFIXES = [
   PATH_LOGIN,

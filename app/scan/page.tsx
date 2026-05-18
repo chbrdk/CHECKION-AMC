@@ -46,7 +46,7 @@ import { useStatusUi } from '@/components/status/StatusUiContext';
 import { ensureUrlWithScheme } from '@/lib/url-normalize';
 import { fetchOnceMoreOn5xx } from '@/lib/fetch-retry-5xx';
 import { extractHostname } from '@/lib/geo-eeat/suggest-parse';
-import { isAmcScanProjectSelectorEnabled } from '@/lib/amc-lite';
+import { isAmcGeoEeatQuickScanEnabled, isAmcScanProjectSelectorEnabled } from '@/lib/amc-lite';
 import { resolveLaunchProjectId } from '@/lib/launch-project';
 
 const GEO_EEAT_QUICK_QUERY_MAX = 500;
@@ -79,6 +79,7 @@ function ScanPage() {
     const { status: sessionStatus } = useSession();
     const { singlePageScan, domainScan } = useStatusUi();
     const projectSelectorEnabled = isAmcScanProjectSelectorEnabled();
+    const geoEeatQuickEnabled = isAmcGeoEeatQuickScanEnabled();
     const launchProjectId = projectSelectorEnabled ? searchParams.get('projectId') : null;
     const STANDARDS: { value: WcagStandard; label: string }[] = [
         { value: 'WCAG2A', label: t('standards.wcag2a') },
@@ -180,7 +181,7 @@ function ScanPage() {
     }, [scanMode]);
 
     const handleScan = async () => {
-        const isGeoCompetitiveOnly = scanMode === 'geoEeat' && geoEeatFormMode === 'quick';
+        const isGeoCompetitiveOnly = scanMode === 'geoEeat' && geoEeatQuickEnabled && geoEeatFormMode === 'quick';
         const urlForRequest = (() => {
             if (isGeoCompetitiveOnly) return '';
             if (!url.trim()) return null;
@@ -201,7 +202,7 @@ function ScanPage() {
             }
 
             if (scanMode === 'geoEeat') {
-                if (geoEeatFormMode === 'quick') {
+                if (geoEeatQuickEnabled && geoEeatFormMode === 'quick') {
                     const q = geoEeatQuickQuestion.trim().slice(0, GEO_EEAT_QUICK_QUERY_MAX);
                     const rawCompany = geoEeatQuickCompetitor.trim();
                     if (!q || !rawCompany) {
@@ -455,11 +456,12 @@ function ScanPage() {
                         size="medium"
                         onClick={handleScan}
                         disabled={
-                            ((scanMode !== 'geoEeat' || geoEeatFormMode !== 'quick') && !url.trim()) ||
+                            ((scanMode !== 'geoEeat' || !geoEeatQuickEnabled || geoEeatFormMode !== 'quick') && !url.trim()) ||
                             scanning ||
                             sessionStatus === 'loading' ||
                             (scanMode === 'journey' && !task.trim()) ||
                             (scanMode === 'geoEeat' &&
+                                geoEeatQuickEnabled &&
                                 geoEeatFormMode === 'quick' &&
                                 (!geoEeatQuickQuestion.trim() || !geoEeatQuickCompetitor.trim()))
                         }
@@ -498,7 +500,7 @@ function ScanPage() {
                     </Box>
 
                     {/* URL Input - Not required for GEO competitive-only */}
-                    {!(scanMode === 'geoEeat' && geoEeatFormMode === 'quick') && (
+                    {!(scanMode === 'geoEeat' && geoEeatQuickEnabled && geoEeatFormMode === 'quick') && (
                         <Box sx={{ flex: 1 }}>
                             <MsqdxFormField
                                 label={t('scan.urlLabel')}
@@ -557,21 +559,23 @@ function ScanPage() {
                         </Box>
                     )}
 
-                    {/* GEO/E-E-A-T: Kurzmodus (1 Frage + 1 Konkurrent) oder Vollmodus */}
+                    {/* GEO/E-E-A-T: optional quick tab (AMC: full analysis only) */}
                     {scanMode === 'geoEeat' && (
                         <Box sx={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                            <MsqdxTabs
-                                value={geoEeatFormMode}
-                                onChange={(v: string) => {
-                                    setGeoEeatFormMode(v as 'quick' | 'full');
-                                    setError(null);
-                                }}
-                                tabs={[
-                                    { value: 'quick', label: t('scan.geoEeatModeQuick') },
-                                    { value: 'full', label: t('scan.geoEeatModeFull') },
-                                ]}
-                            />
-                            {geoEeatFormMode === 'quick' ? (
+                            {geoEeatQuickEnabled ? (
+                                <MsqdxTabs
+                                    value={geoEeatFormMode}
+                                    onChange={(v: string) => {
+                                        setGeoEeatFormMode(v as 'quick' | 'full');
+                                        setError(null);
+                                    }}
+                                    tabs={[
+                                        { value: 'quick', label: t('scan.geoEeatModeQuick') },
+                                        { value: 'full', label: t('scan.geoEeatModeFull') },
+                                    ]}
+                                />
+                            ) : null}
+                            {geoEeatQuickEnabled && geoEeatFormMode === 'quick' ? (
                                 <>
                                     <MsqdxTypography variant="caption" sx={{ color: 'var(--color-text-muted-on-light)' }}>
                                         {t('scan.geoEeatQuickHint')}

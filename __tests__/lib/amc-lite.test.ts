@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   isAmcLiteNavHrefEnabled,
   isAmcLitePublicPath,
+  isAmcGeoEeatQuickScanEnabled,
   isAmcScanProjectSelectorEnabled,
   normalizePathnameForAmcLite,
   shouldRedirectHomeToScan,
@@ -44,5 +45,9 @@ describe('amc-lite routes', () => {
 
   it('disables project selector on scans for AMC demo', () => {
     expect(isAmcScanProjectSelectorEnabled()).toBe(false);
+  });
+
+  it('offers GEO/E-E-A-T full analysis only (no quick tab)', () => {
+    expect(isAmcGeoEeatQuickScanEnabled()).toBe(false);
   });
 });

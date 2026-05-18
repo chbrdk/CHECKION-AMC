@@ -28,6 +28,11 @@ export function isAmcGeoEeatCompetitiveSelectorEnabled(): boolean {
   return false;
 }
 
+/** AMC demo: skip Gemini in competitive benchmark (quota/noise); OpenAI + Claude only. */
+export function isAmcGeminiCompetitiveBenchmarkEnabled(): boolean {
+  return false;
+}
+
 /** AMC demo: fixed WCAG 2.1 AA — no standard level dropdown on scan. */
 export function isAmcScanWcagStandardSelectorEnabled(): boolean {
   return false;

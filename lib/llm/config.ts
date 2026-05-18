@@ -3,6 +3,8 @@
  * OPENAI_API_KEY is required for GEO/EEAT; ANTHROPIC_API_KEY optional for Claude benchmark.
  */
 
+import { isAmcGeminiCompetitiveBenchmarkEnabled } from '@/lib/amc-lite';
+
 export const OPENAI_MODEL = process.env.OPENAI_MODEL ?? 'gpt-5-nano';
 
 /** OpenAI models for competitive benchmark (each query run with each model). */
@@ -40,6 +42,24 @@ export const COMPETITIVE_BENCHMARK_MODELS_GEMINI = [
     'gemini-3-flash-preview',
     'gemini-3.1-pro-preview',
 ] as const;
+
+function parseCsvModels(raw: string | undefined): string[] {
+    if (!raw?.trim()) return [];
+    return raw
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+}
+
+/** Gemini models for GEO competitive benchmark; empty = skip Gemini even if API key is set. */
+export function getCompetitiveBenchmarkGeminiModels(): readonly string[] {
+    if (process.env.CHECKION_DISABLE_GEMINI_COMPETITIVE === '1' || !isAmcGeminiCompetitiveBenchmarkEnabled()) {
+        return [];
+    }
+    const fromEnv = parseCsvModels(process.env.CHECKION_COMPETITIVE_GEMINI_MODELS);
+    if (fromEnv.length > 0) return fromEnv;
+    return COMPETITIVE_BENCHMARK_MODELS_GEMINI;
+}
 
 export function getOpenAIKey(): string {
     const key = process.env.OPENAI_API_KEY;

@@ -19,7 +19,7 @@ import {
     getGeminiKey,
     COMPETITIVE_BENCHMARK_MODELS,
     COMPETITIVE_BENCHMARK_MODELS_CLAUDE,
-    COMPETITIVE_BENCHMARK_MODELS_GEMINI,
+    getCompetitiveBenchmarkGeminiModels,
 } from '@/lib/llm/config';
 import {
     addAnthropicUsage,
@@ -349,7 +349,12 @@ export async function runCompetitiveBenchmarkGemini(
                 rawAnswerExcerpt: rawContent.slice(0, 500),
             };
         } catch (e) {
-            console.error('[CHECKION] Competitive benchmark Gemini query error:', e);
+            const status =
+                e && typeof e === 'object' && 'status' in e && typeof (e as { status?: number }).status === 'number'
+                    ? (e as { status: number }).status
+                    : undefined;
+            const log = status === 429 || status === 503 ? console.warn : console.error;
+            log('[CHECKION] Competitive benchmark Gemini query error:', e);
             return {
                 queryId: `q-${q}`,
                 query,
@@ -408,7 +413,7 @@ export async function runCompetitiveBenchmarkMultiModel(
     queries: string[],
     openaiModels: readonly string[] = COMPETITIVE_BENCHMARK_MODELS,
     claudeModels: readonly string[] = COMPETITIVE_BENCHMARK_MODELS_CLAUDE,
-    geminiModels: readonly string[] = COMPETITIVE_BENCHMARK_MODELS_GEMINI,
+    geminiModels: readonly string[] = getCompetitiveBenchmarkGeminiModels(),
     options?: CompetitiveBenchmarkMultiModelOptions
 ): Promise<Record<string, CompetitiveBenchmarkResult>> {
     const out: Record<string, CompetitiveBenchmarkResult> = {};
@@ -433,7 +438,7 @@ export async function runCompetitiveBenchmarkMultiModel(
         }
     }
 
-    if (getGeminiKey()) {
+    if (getGeminiKey() && geminiModels.length > 0) {
         for (const model of geminiModels) {
             const result = await runCompetitiveBenchmarkGemini(targetUrl, competitors, queries, model, usageTotals);
             if (result) {

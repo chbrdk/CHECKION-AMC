@@ -3,6 +3,7 @@ import {
   isAmcLiteNavHrefEnabled,
   isAmcLitePublicPath,
   isAmcGeoEeatCompetitiveSelectorEnabled,
+  isAmcGeminiCompetitiveBenchmarkEnabled,
   isAmcGeoEeatQuickScanEnabled,
   isAmcScanProjectSelectorEnabled,
   isAmcScanRunnerSelectorEnabled,
@@ -56,6 +57,10 @@ describe('amc-lite routes', () => {
 
   it('always runs GEO/E-E-A-T competitive benchmark (no opt-in checkbox)', () => {
     expect(isAmcGeoEeatCompetitiveSelectorEnabled()).toBe(false);
+  });
+
+  it('disables Gemini in competitive benchmark for AMC', () => {
+    expect(isAmcGeminiCompetitiveBenchmarkEnabled()).toBe(false);
   });
 
   it('hides WCAG standard selector on scan (fixed AA)', () => {

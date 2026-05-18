@@ -48,6 +48,9 @@ git merge upstream/main
 | `CHECKION_*_ON_START` | **nicht setzen** (Backfill/Sync von Haupt-CHECKION übernehmen führt zu Startup-Fehlern) |
 | `REDIS_URL` | Entweder erreichbar konfigurieren **oder** weglassen |
 | `CHECKION_DISABLE_REDIS_RATE_LIMIT` | `1` empfohlen, wenn AMC kein Redis hat (verhindert 500 bei Register/Scan bei DNS-Fehler `EAI_AGAIN`) |
+| `GEMINI_API_KEY` | **Optional weglassen** — AMC nutzt keinen Gemini-Competitive-Benchmark (Code: `isAmcGeminiCompetitiveBenchmarkEnabled()` → `false`). Verhindert 429/503-Spam in den Logs. Competitive läuft über **OpenAI** (+ **Anthropic**, falls `ANTHROPIC_API_KEY` gesetzt). |
+| `CHECKION_DISABLE_GEMINI_COMPETITIVE` | `1` zusätzlich möglich (erzwingt leere Gemini-Modellliste auch außerhalb AMC-Flag) |
+| `CHECKION_COMPETITIVE_GEMINI_MODELS` | Nur falls Gemini wieder aktiv: z. B. `gemini-2.5-flash` (kommagetrennt), nicht die volle Pro-Liste |
 
 Repo in Coolify auf **CHECKION-AMC** umstellen (nicht CHECKION).
 

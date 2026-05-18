@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession, getSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -71,7 +71,7 @@ async function readJsonSafe<T = unknown>(res: Response): Promise<T | null> {
     }
 }
 
-export default function ScanPage() {
+function ScanPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { t } = useI18n();
@@ -870,5 +870,25 @@ export default function ScanPage() {
             )}
 
         </Box>
+    );
+}
+
+function ScanPageFallback() {
+    const { t } = useI18n();
+    return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 240 }}>
+            <CircularProgress size={28} sx={{ color: MSQDX_BRAND_PRIMARY.green }} />
+            <MsqdxTypography variant="body2" sx={{ ml: 2, color: 'var(--color-text-secondary)' }}>
+                {t('common.loading')}
+            </MsqdxTypography>
+        </Box>
+    );
+}
+
+export default function ScanPageRoute() {
+    return (
+        <Suspense fallback={<ScanPageFallback />}>
+            <ScanPage />
+        </Suspense>
     );
 }

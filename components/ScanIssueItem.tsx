@@ -51,8 +51,6 @@ export const ScanIssueItem = memo(({ issue, globalRowIndex, registerRef }: ScanI
       {hasDetails ? (
         <MsqdxAccordionItem
           id={itemId}
-          size="small"
-          borderRadius="md"
           summary={
             <Box sx={{ display: 'flex', gap: 1, width: '100%', minWidth: 0, py: 0.25 }}>
               <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: config.color, flexShrink: 0, mt: 0.75 }} />

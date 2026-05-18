@@ -18,6 +18,7 @@ import { SharePanel } from '@/components/SharePanel';
 import { AddToProject } from '@/components/AddToProject';
 import { CompetitivePositionDiagram } from '@/components/CompetitivePositionDiagram';
 import type { GeoEeatIntensiveResult, GeoEeatPageResult, CompetitiveBenchmarkResult } from '@/lib/types';
+import { amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
 
 const POLL_INTERVAL_MS = 2500;
 
@@ -180,7 +181,7 @@ export default function GeoEeatResultPage() {
 
     if (!jobId) {
         return (
-            <Box sx={{ p: 'var(--msqdx-spacing-md)', maxWidth: 900, mx: 'auto' }}>
+            <Box sx={amcMobileFlushPageShellSx(900)}>
                 <MsqdxTypography variant="body1" color="text.secondary">
                     {t('geoEeat.missingJobId')}
                 </MsqdxTypography>
@@ -195,7 +196,7 @@ export default function GeoEeatResultPage() {
 
     if (status === 'loading' || status === 'running') {
         return (
-            <Box sx={{ p: 'var(--msqdx-spacing-md)', maxWidth: 900, mx: 'auto', textAlign: 'center', py: 6 }}>
+            <Box sx={{ ...amcMobileFlushPageShellSx(900), textAlign: 'center', py: 6 }}>
                 <CircularProgress size={40} sx={{ color: MSQDX_BRAND_PRIMARY.green }} />
                 <MsqdxTypography variant="body1" sx={{ mt: 2, color: 'var(--color-text-muted-on-light)' }}>
                     {t('geoEeat.statusRunning')}
@@ -209,7 +210,7 @@ export default function GeoEeatResultPage() {
 
     if (status === 'error') {
         return (
-            <Box sx={{ p: 'var(--msqdx-spacing-md)', maxWidth: 900, mx: 'auto' }}>
+            <Box sx={amcMobileFlushPageShellSx(900)}>
                 <MsqdxMoleculeCard
                     title={t('geoEeat.statusError')}
                     variant="flat"
@@ -257,7 +258,7 @@ export default function GeoEeatResultPage() {
     };
 
     return (
-        <Box sx={{ p: 'var(--msqdx-spacing-md)', maxWidth, mx: 'auto' }}>
+        <Box sx={amcMobileFlushPageShellSx(maxWidth)}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1, mb: 2 }}>
                 <MsqdxTypography variant="h5" sx={{ fontWeight: 700 }}>
                     {t('geoEeat.title')}

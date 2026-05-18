@@ -70,8 +70,13 @@ export function isAmcScanRoute(pathname: string): boolean {
   return path === PATH_SCAN || path.startsWith(`${PATH_SCAN}/`);
 }
 
+export function isAmcGeoEeatRoute(pathname: string): boolean {
+  const path = normalizePathnameForAmcLite(pathname);
+  return path === PATH_GEO_EEAT || path.startsWith(`${PATH_GEO_EEAT}/`);
+}
+
 export function isAmcMobileMainFlushHorizontal(pathname: string): boolean {
-  return isAmcScanRoute(pathname);
+  return isAmcScanRoute(pathname) || isAmcGeoEeatRoute(pathname);
 }
 
 /** Path prefixes allowed without redirect to /scan */

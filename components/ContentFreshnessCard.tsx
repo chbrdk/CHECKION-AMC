@@ -4,6 +4,7 @@ import { Box, alpha } from '@mui/material';
 import { MsqdxTypography, MsqdxMoleculeCard, MsqdxChip } from '@msqdx/react';
 import { MSQDX_STATUS } from '@msqdx/tokens';
 import type { ContentFreshness, ContentFreshnessSource } from '@/lib/types';
+import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
 import { CalendarClock, Info } from 'lucide-react';
 import { useI18n } from '@/components/i18n/I18nProvider';
 
@@ -55,7 +56,7 @@ export function ContentFreshnessCard({ data }: { data: ContentFreshness }) {
             subtitle={t('results.contentFreshnessSubtitle')}
             variant="flat"
             borderRadius="lg"
-            sx={{ bgcolor: 'var(--color-card-bg)', height: '100%' }}
+            sx={{ bgcolor: 'var(--color-card-bg)', ...amcFlushSubviewCardSx }}
         >
             <Box sx={{ display: 'grid', gap: 'var(--msqdx-spacing-sm)' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>

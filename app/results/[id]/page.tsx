@@ -111,7 +111,12 @@ import { InfoTooltip } from '@/components/InfoTooltip';
 import { PaginationBar } from '@/components/PaginationBar';
 import { RESULTS_ISSUES_PAGE_SIZE } from '@/lib/constants';
 import { resultsIssuesOneBasedPageForFilteredIndex } from '@/lib/results-issues-ui';
-import { amcMobileFlushCardSx, amcMobileFlushNestedCardSx, amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
+import {
+    amcMobileFlushCardSx,
+    amcMobileFlushNestedCardSx,
+    amcMobileFlushPageShellSx,
+    amcResultsSubviewGridSx,
+} from '@/lib/amc-page-shell';
 import { AmcResponsiveTabs } from '@/components/amc/AmcResponsiveTabs';
 import { ResultsPageHeader } from '@/components/results/ResultsPageHeader';
 import { ResultsIssueFilters } from '@/components/results/ResultsIssueFilters';
@@ -1434,11 +1439,7 @@ export default function ResultsPage() {
             })()}
 
             {viewMode === 'seo' && (
-                <Box sx={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-                    gap: 'var(--msqdx-spacing-md)'
-                }}>
+                <Box sx={amcResultsSubviewGridSx}>
                     {result.seo ? (
                         <SeoCard seo={result.seo} />
                     ) : (
@@ -1454,11 +1455,7 @@ export default function ResultsPage() {
             )}
 
             {viewMode === 'infra' && (
-                <Box sx={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-                    gap: 'var(--msqdx-spacing-md)'
-                }}>
+                <Box sx={amcResultsSubviewGridSx}>
                     {result.geo ? (
                         <InfraCard
                             geo={result.geo}

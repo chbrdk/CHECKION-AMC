@@ -8,20 +8,31 @@ import {
 } from '@msqdx/react';
 import { MSQDX_SPACING, MSQDX_THEME, MSQDX_STATUS, MSQDX_BRAND_PRIMARY, MSQDX_NEUTRAL } from '@msqdx/tokens';
 import type { LinkAudit } from '@/lib/types';
+import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
 import { Link2, Link, ExternalLink, AlertTriangle, CheckCircle, FileText } from 'lucide-react';
+
+const linkUrlCaptionSx = {
+    color: 'var(--color-text-muted-on-light)',
+    display: 'block',
+    maxWidth: { xs: '100%', md: 300 },
+    overflow: 'hidden',
+    textOverflow: { xs: 'clip', md: 'ellipsis' },
+    whiteSpace: { xs: 'normal', md: 'nowrap' },
+    wordBreak: 'break-all',
+} as const;
 
 export function LinkAuditCard({ links }: { links: LinkAudit }) {
     if (!links) return null;
 
     return (
         <MsqdxMoleculeCard
-            sx={{ bgcolor: 'var(--color-card-bg)', height: '100%' }}
+            sx={{ bgcolor: 'var(--color-card-bg)', ...amcFlushSubviewCardSx }}
             title="Link Audit"
             subtitle="Analysis of hyperlinks and their availability."
             variant="flat"
             borderRadius="lg"
         >
-            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--msqdx-spacing-sm)', mb: 'var(--msqdx-spacing-md)' }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 'var(--msqdx-spacing-sm)', mb: 'var(--msqdx-spacing-md)' }}>
                 <StatItem label="Total Links" value={links.total} icon={<Link2 size={16} />} />
                 <StatItem label="Internal" value={links.internal} icon={<Link size={16} />} />
                 <StatItem label="External" value={links.external} icon={<ExternalLink size={16} />} />
@@ -45,14 +56,16 @@ export function LinkAuditCard({ links }: { links: LinkAudit }) {
                                 px: MSQDX_SPACING.scale.xs,
                                 borderBottom: i < links.broken.length - 1 ? `1px solid ${alpha(MSQDX_STATUS.error.base, 0.5)}` : 'none',
                                 display: 'flex',
+                                flexDirection: { xs: 'column', sm: 'row' },
                                 justifyContent: 'space-between',
-                                alignItems: 'center'
+                                alignItems: { xs: 'flex-start', sm: 'center' },
+                                gap: 0.75,
                             }}>
-                                <Box sx={{ overflow: 'hidden' }}>
+                                <Box sx={{ overflow: 'hidden', minWidth: 0, flex: 1 }}>
                                     <MsqdxTypography variant="body2" sx={{ fontWeight: 600, color: 'var(--color-text-on-light)' }}>
                                         {link.text || 'No Text'}
                                     </MsqdxTypography>
-                                    <MsqdxTypography variant="caption" sx={{ color: 'var(--color-text-muted-on-light)', display: 'block', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    <MsqdxTypography variant="caption" sx={linkUrlCaptionSx}>
                                         {link.url}
                                     </MsqdxTypography>
                                 </Box>
@@ -63,7 +76,8 @@ export function LinkAuditCard({ links }: { links: LinkAudit }) {
                                         bgcolor: MSQDX_STATUS.error.base,
                                         color: '#fff',
                                         fontWeight: 'bold',
-                                        height: 24
+                                        height: 24,
+                                        flexShrink: 0,
                                     }}
                                 />
                             </Box>
@@ -117,7 +131,7 @@ export function LinkAuditCard({ links }: { links: LinkAudit }) {
                                 <MsqdxTypography variant="body2" sx={{ fontWeight: 600, color: 'var(--color-text-on-light)' }}>
                                     {link.text || 'No Text'}
                                 </MsqdxTypography>
-                                <MsqdxTypography variant="caption" sx={{ color: 'var(--color-text-muted-on-light)', display: 'block', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                <MsqdxTypography variant="caption" sx={linkUrlCaptionSx}>
                                     {link.url}
                                 </MsqdxTypography>
                             </Box>
@@ -149,7 +163,7 @@ export function LinkAuditCard({ links }: { links: LinkAudit }) {
                                 <MsqdxTypography variant="body2" sx={{ fontWeight: 600, color: 'var(--color-text-on-light)' }}>
                                     {item.text || 'PDF'}
                                 </MsqdxTypography>
-                                <MsqdxTypography variant="caption" sx={{ color: 'var(--color-text-muted-on-light)', display: 'block', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                <MsqdxTypography variant="caption" sx={linkUrlCaptionSx}>
                                     {item.url}
                                 </MsqdxTypography>
                             </Box>

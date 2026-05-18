@@ -7,6 +7,7 @@ import {
 } from '@msqdx/react';
 import { MSQDX_SPACING, MSQDX_THEME, MSQDX_STATUS, MSQDX_BRAND_PRIMARY } from '@msqdx/tokens';
 import type { SeoAudit } from '@/lib/types';
+import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
 import { CheckCircle, XCircle, AlertTriangle, BarChart3 } from 'lucide-react';
 
 export function SeoCard({ seo }: { seo: SeoAudit }) {
@@ -16,7 +17,7 @@ export function SeoCard({ seo }: { seo: SeoAudit }) {
             subtitle="Basic Search Engine Optimization check."
             variant="flat"
             borderRadius="lg"
-            sx={{ bgcolor: 'var(--color-card-bg)', height: '100%' }}
+            sx={{ bgcolor: 'var(--color-card-bg)', ...amcFlushSubviewCardSx }}
         >
             <Box sx={{ display: 'grid', gap: 'var(--msqdx-spacing-sm)' }}>
                 <SeoItem label="Page Title" value={seo.title} recommended="30-60 characters" count={seo.title?.length} />
@@ -99,17 +100,17 @@ export function SeoCard({ seo }: { seo: SeoAudit }) {
                                         key={k.keyword}
                                         sx={{
                                             display: 'flex',
-                                            alignItems: 'center',
+                                            flexDirection: { xs: 'column', sm: 'row' },
+                                            alignItems: { xs: 'flex-start', sm: 'center' },
                                             justifyContent: 'space-between',
-                                            flexWrap: 'wrap',
-                                            gap: 0.5,
+                                            gap: 0.75,
                                             p: 'var(--msqdx-spacing-xs) var(--msqdx-spacing-sm)',
                                             borderBottom: i < seo.keywordAnalysis!.topKeywords.length - 1 ? '1px solid var(--color-secondary-dx-grey-light-tint)' : 'none',
                                             bgcolor: inCritical ? alpha(MSQDX_STATUS.success.base, 0.06) : 'transparent'
                                         }}
                                     >
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <MsqdxTypography variant="body2" sx={{ fontWeight: 600, color: 'var(--color-text-on-light)', minWidth: 80 }}>
+                                            <MsqdxTypography variant="body2" sx={{ fontWeight: 600, color: 'var(--color-text-on-light)', minWidth: 0 }}>
                                                 {k.keyword}
                                             </MsqdxTypography>
                                             <MsqdxTypography variant="caption" sx={{ color: 'var(--color-text-muted-on-light)' }}>
@@ -167,8 +168,16 @@ function SeoItem({
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between' }}>
-            <Box>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                alignItems: { xs: 'stretch', md: 'flex-start' },
+                justifyContent: 'space-between',
+                gap: { xs: 0.75, md: 0 },
+            }}
+        >
+            <Box sx={{ minWidth: 0 }}>
                 <MsqdxTypography variant="subtitle2" sx={{ fontWeight: 600, color: 'var(--color-text-on-light)' }}>
                     {label}
                 </MsqdxTypography>
@@ -178,9 +187,9 @@ function SeoItem({
                     </MsqdxTypography>
                 )}
             </Box>
-            <Box sx={{ textAlign: 'right', maxWidth: '60%' }}>
+            <Box sx={{ textAlign: { xs: 'left', md: 'right' }, maxWidth: { xs: '100%', md: '60%' }, minWidth: 0 }}>
                 {isPresent ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, justifyContent: { xs: 'flex-start', md: 'flex-end' }, flexWrap: 'wrap' }}>
                         <MsqdxTypography variant="body2" sx={{
                             color: isMsg ? MSQDX_BRAND_PRIMARY.purple : 'var(--color-text-muted-on-light)',
                             wordBreak: 'break-word',
@@ -206,7 +215,7 @@ function SeoItem({
                     />
                 )}
                 {count !== undefined && isPresent && (
-                    <MsqdxTypography variant="caption" sx={{ display: 'block', color: status === 'warn' ? MSQDX_STATUS.warning.base : MSQDX_THEME.dark.text.tertiary }}>
+                    <MsqdxTypography variant="caption" sx={{ display: 'block', color: status === 'warn' ? MSQDX_STATUS.warning.base : 'var(--color-text-muted-on-light)' }}>
                         {count} chars
                     </MsqdxTypography>
                 )}

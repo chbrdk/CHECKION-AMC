@@ -3,6 +3,7 @@ import {
   amcMobileFlushCardSx,
   amcMobileFlushNestedCardSx,
   amcMobileFlushPageShellSx,
+  amcResultsSubviewGridSx,
 } from '@/lib/amc-page-shell';
 
 describe('amc-page-shell', () => {
@@ -28,6 +29,13 @@ describe('amc-page-shell', () => {
     expect(amcMobileFlushNestedCardSx).toMatchObject({
       mx: { xs: 'calc(-1 * var(--msqdx-spacing-md))', md: 0 },
       '& > div': { px: { xs: 'var(--msqdx-spacing-md)' } },
+    });
+  });
+
+  it('uses single-column subview grid on mobile', () => {
+    expect(amcResultsSubviewGridSx).toMatchObject({
+      gridTemplateColumns: { xs: '1fr', md: 'repeat(auto-fit, minmax(400px, 1fr))' },
+      minWidth: 0,
     });
   });
 });

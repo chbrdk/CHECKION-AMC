@@ -50,3 +50,18 @@ export const amcMobileFlushNestedCardSx = {
     px: { xs: flushInset },
   },
 } as const;
+
+/** SEO/Infra subviews inside flush results shell: single column on mobile. */
+export const amcResultsSubviewGridSx = {
+  display: 'grid',
+  gridTemplateColumns: { xs: '1fr', md: 'repeat(auto-fit, minmax(400px, 1fr))' },
+  gap: 'var(--msqdx-spacing-md)',
+  minWidth: 0,
+} as const;
+
+/** Msqdx cards inside flush results subview grids (SEO, Infra, …). */
+export const amcFlushSubviewCardSx = {
+  minWidth: 0,
+  height: { xs: 'auto', md: '100%' },
+  ...amcMobileFlushNestedCardSx,
+} as const;

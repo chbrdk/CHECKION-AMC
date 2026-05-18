@@ -8,6 +8,7 @@ import {
 } from '@msqdx/react';
 import { MSQDX_SPACING, MSQDX_THEME, MSQDX_STATUS, MSQDX_BRAND_PRIMARY, MSQDX_NEUTRAL } from '@msqdx/tokens';
 import type { GenerativeEngineAudit, YmylResult, GeoAudit } from '@/lib/types';
+import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
 import { Brain, FileText, Database, Quote, UserCheck, Bot, CheckCircle2, XCircle, Info, AlertTriangle } from 'lucide-react';
 
 export function GenerativeOptimizerCard({
@@ -36,7 +37,7 @@ export function GenerativeOptimizerCard({
             subtitle="Optimierung der Sichtbarkeit in KI-Suchmaschinen (ChatGPT, Perplexity, Gemini)."
             variant="flat"
             borderRadius="lg"
-            sx={{ bgcolor: MSQDX_THEME.light.surface.primary, color: textPrimary, height: '100%' }}
+            sx={{ bgcolor: MSQDX_THEME.light.surface.primary, color: textPrimary, ...amcFlushSubviewCardSx }}
         >
             <Box sx={{ display: 'grid', gap: 'var(--msqdx-spacing-sm)' }}>
                 {/* Page context: YMYL, Geo-Targeting */}

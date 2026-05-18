@@ -8,6 +8,7 @@ import {
 } from '@msqdx/react';
 import { MSQDX_STATUS, MSQDX_BRAND_PRIMARY } from '@msqdx/tokens';
 import type { SecurityAudit } from '@/lib/types';
+import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
 import { ShieldCheck, ShieldAlert } from 'lucide-react';
 import { useI18n } from '@/components/i18n/I18nProvider';
 
@@ -43,7 +44,7 @@ export function SecurityCard({ security }: { security: SecurityAudit }) {
             subtitle={t('results.securityCardSubtitle')}
             variant="flat"
             borderRadius="lg"
-            sx={{ bgcolor: 'var(--color-card-bg)', height: '100%' }}
+            sx={{ bgcolor: 'var(--color-card-bg)', ...amcFlushSubviewCardSx }}
         >
             <Box sx={{ display: 'grid', gap: 'var(--msqdx-spacing-xs)' }}>
                 {HEADER_LABELS.map(({ key, label }) => {

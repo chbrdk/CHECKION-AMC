@@ -2,6 +2,7 @@ import { Box, alpha } from '@mui/material';
 import { MsqdxTypography, MsqdxMoleculeCard, MsqdxChip } from '@msqdx/react';
 import { MSQDX_STATUS, MSQDX_BRAND_PRIMARY } from '@msqdx/tokens';
 import type { TechnicalInsights } from '@/lib/types';
+import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
 import { Globe, Smartphone, Palette, CheckCircle2, Cog, Repeat, RefreshCw } from 'lucide-react';
 
 export function TechnicalInsightsCard({ insights }: { insights: TechnicalInsights }) {
@@ -13,7 +14,7 @@ export function TechnicalInsightsCard({ insights }: { insights: TechnicalInsight
             subtitle="Third-Party, PWA, Theme."
             variant="flat"
             borderRadius="lg"
-            sx={{ bgcolor: 'var(--color-card-bg)', height: '100%' }}
+            sx={{ bgcolor: 'var(--color-card-bg)', ...amcFlushSubviewCardSx }}
         >
             <Box sx={{ display: 'grid', gap: 'var(--msqdx-spacing-sm)' }}>
                 {insights.thirdPartyDomains.length > 0 && (

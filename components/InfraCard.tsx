@@ -6,6 +6,7 @@ import {
 } from '@msqdx/react';
 import { MSQDX_SPACING, MSQDX_THEME, MSQDX_STATUS, MSQDX_BRAND_PRIMARY, MSQDX_NEUTRAL } from '@msqdx/tokens';
 import type { GeoAudit, ScanResult } from '@/lib/types';
+import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
 import { Globe, Server, Cloud, Languages, Layers, Radar } from 'lucide-react';
 
 export function InfraCard({
@@ -25,7 +26,7 @@ export function InfraCard({
             subtitle="Serverstandort, CDN, Sprachen, erkannte Plattform und Tracking-Tools."
             variant="flat"
             borderRadius="lg"
-            sx={{ bgcolor: 'var(--color-card-bg)', height: '100%' }}
+            sx={{ bgcolor: 'var(--color-card-bg)', ...amcFlushSubviewCardSx }}
         >
             <Box sx={{ display: 'grid', gap: 'var(--msqdx-spacing-sm)' }}>
                 {/* Location Section */}

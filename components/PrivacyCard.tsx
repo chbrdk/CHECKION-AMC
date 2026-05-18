@@ -8,6 +8,7 @@ import {
 } from '@msqdx/react';
 import { MSQDX_STATUS, MSQDX_BRAND_PRIMARY } from '@msqdx/tokens';
 import type { ConsentSignals, PrivacyAudit } from '@/lib/types';
+import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
 import { ShieldCheck, FileText, Cookie } from 'lucide-react';
 import { useI18n } from '@/components/i18n/I18nProvider';
 import { InfoTooltip } from '@/components/InfoTooltip';
@@ -22,7 +23,7 @@ export function PrivacyCard({ privacy, consentSignals }: { privacy: PrivacyAudit
             subtitle="Basic GDPR and legal requirement checks."
             variant="flat"
             borderRadius="lg"
-            sx={{ bgcolor: 'var(--color-card-bg)', height: '100%' }}
+            sx={{ bgcolor: 'var(--color-card-bg)', ...amcFlushSubviewCardSx }}
         >
             <Box sx={{ display: 'grid', gap: 'var(--msqdx-spacing-xs)' }}>
                 <PrivacyItem

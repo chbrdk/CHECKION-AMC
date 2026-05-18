@@ -22,10 +22,13 @@ import {
 } from '@/lib/amc-lite';
 
 describe('amc-lite routes', () => {
-  it('allows scan, results, geo-eeat, settings, auth, and api', () => {
+  it('allows scan, results, domain deep scans, geo-eeat, settings, auth, and api', () => {
     expect(isAmcLitePublicPath('/scan')).toBe(true);
     expect(isAmcLitePublicPath('/scan/domain')).toBe(true);
     expect(isAmcLitePublicPath('/results/abc')).toBe(true);
+    expect(isAmcLitePublicPath('/domain/xyz')).toBe(true);
+    expect(isAmcLitePublicPath('/deep-scans')).toBe(true);
+    expect(isAmcLitePublicPath('/deep-scans/compare')).toBe(true);
     expect(isAmcLitePublicPath('/geo-eeat/job-123')).toBe(true);
     expect(isAmcLitePublicPath('/settings')).toBe(true);
     expect(isAmcLitePublicPath('/login')).toBe(true);
@@ -35,14 +38,13 @@ describe('amc-lite routes', () => {
 
   it('blocks full-product routes', () => {
     expect(isAmcLitePublicPath('/projects')).toBe(false);
-    expect(isAmcLitePublicPath('/deep-scans')).toBe(false);
     expect(isAmcLitePublicPath('/developers')).toBe(false);
-    expect(isAmcLitePublicPath('/domain/xyz')).toBe(false);
     expect(isAmcLitePublicPath('/journey-agent/job')).toBe(false);
   });
 
-  it('enables scan and settings in sidebar nav', () => {
+  it('enables scan, deep scans, and settings in sidebar nav', () => {
     expect(isAmcLiteNavHrefEnabled('/scan')).toBe(true);
+    expect(isAmcLiteNavHrefEnabled('/deep-scans')).toBe(true);
     expect(isAmcLiteNavHrefEnabled('/settings')).toBe(true);
     expect(isAmcLiteNavHrefEnabled('/projects')).toBe(false);
     expect(isAmcLiteNavHrefEnabled('/developers')).toBe(false);

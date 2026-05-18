@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server';
 import { isAmcLitePublicPath, shouldRedirectHomeToScan } from '@/lib/amc-lite';
 import {
   getAppBasePath,
+  PATH_DEEP_SCANS,
+  PATH_DOMAIN,
   PATH_SCAN,
   PATH_RESULTS,
   PATH_SETTINGS,
@@ -11,8 +13,8 @@ import {
   PATH_REGISTER,
 } from '@/lib/constants';
 
-/** AMC fork: scan + results + GEO/E-E-A-T + settings + auth (see lib/amc-lite.ts). */
-const protectedPaths = [PATH_SCAN, PATH_RESULTS, PATH_GEO_EEAT, PATH_SETTINGS];
+/** AMC fork: scan + results + domain deep scans + GEO/E-E-A-T + settings + auth (see lib/amc-lite.ts). */
+const protectedPaths = [PATH_SCAN, PATH_RESULTS, PATH_DOMAIN, PATH_DEEP_SCANS, PATH_GEO_EEAT, PATH_SETTINGS];
 const authPaths = [PATH_LOGIN, PATH_REGISTER];
 
 const SESSION_COOKIES = ['authjs.session-token', '__Secure-authjs.session-token'];

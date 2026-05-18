@@ -5,6 +5,7 @@ import { MsqdxTypography, MsqdxMoleculeCard, MsqdxChip } from '@msqdx/react';
 import { MSQDX_STATUS } from '@msqdx/tokens';
 import type { ContentFreshness, ContentFreshnessSource } from '@/lib/types';
 import { amcFlushSubviewCardSx } from '@/lib/amc-page-shell';
+import { CHECKION_MUI_COLORS } from '@/lib/checkion-mui-colors';
 import { CalendarClock, Info } from 'lucide-react';
 import { useI18n } from '@/components/i18n/I18nProvider';
 
@@ -29,9 +30,11 @@ function confidenceColor(c: ContentFreshness['confidence']): string {
         case 'low':
             return MSQDX_STATUS.info.base;
         default:
-            return 'var(--color-text-muted-on-light)';
+            return CHECKION_MUI_COLORS.textMutedOnLight;
     }
 }
+
+const TEXT_MUTED_ON_LIGHT = CHECKION_MUI_COLORS.textMutedOnLight;
 
 function confidenceLabelKey(c: ContentFreshness['confidence']): string {
     switch (c) {
@@ -80,7 +83,7 @@ export function ContentFreshnessCard({ data }: { data: ContentFreshness }) {
                 </Box>
 
                 {!hasBest && (
-                    <MsqdxTypography variant="body2" sx={{ color: 'var(--color-text-muted-on-light)' }}>
+                    <MsqdxTypography variant="body2" sx={{ color: TEXT_MUTED_ON_LIGHT }}>
                         {t('results.contentFreshnessNoDates')}
                     </MsqdxTypography>
                 )}
@@ -88,7 +91,7 @@ export function ContentFreshnessCard({ data }: { data: ContentFreshness }) {
                 {hasBest && (
                     <>
                         <Box sx={{ p: 'var(--msqdx-spacing-sm)', borderRadius: 1, bgcolor: 'var(--color-secondary-dx-grey-light-tint)' }}>
-                            <MsqdxTypography variant="caption" sx={{ color: 'var(--color-text-muted-on-light)', display: 'block', mb: 0.5 }}>
+                            <MsqdxTypography variant="caption" sx={{ color: TEXT_MUTED_ON_LIGHT, display: 'block', mb: 0.5 }}>
                                 {t('results.contentFreshnessBestSource')}
                             </MsqdxTypography>
                             <MsqdxTypography variant="body2" sx={{ fontWeight: 600, color: 'var(--color-text-on-light)' }}>
@@ -140,7 +143,7 @@ export function ContentFreshnessCard({ data }: { data: ContentFreshness }) {
                                         flexWrap: 'wrap',
                                     }}
                                 >
-                                    <MsqdxTypography variant="caption" sx={{ color: 'var(--color-text-muted-on-light)' }}>
+                                    <MsqdxTypography variant="caption" sx={{ color: TEXT_MUTED_ON_LIGHT }}>
                                         {t(sourceLabelKey(s.source))}
                                     </MsqdxTypography>
                                     <MsqdxTypography variant="caption" sx={{ fontFamily: 'monospace', color: 'var(--color-text-on-light)' }}>

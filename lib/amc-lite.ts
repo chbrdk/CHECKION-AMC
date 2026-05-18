@@ -3,6 +3,8 @@
  */
 
 import {
+  PATH_DEEP_SCANS,
+  PATH_DOMAIN,
   PATH_GEO_EEAT,
   PATH_LOGIN,
   PATH_REGISTER,
@@ -95,6 +97,8 @@ const ALLOWED_PREFIXES = [
   PATH_REGISTER,
   PATH_SCAN,
   PATH_RESULTS,
+  PATH_DOMAIN,
+  PATH_DEEP_SCANS,
   PATH_SETTINGS,
   PATH_GEO_EEAT,
   '/api',
@@ -102,7 +106,7 @@ const ALLOWED_PREFIXES = [
 ] as const;
 
 /** Sidebar / header links that are navigable in AMC (not upgrade-locked). */
-const ENABLED_NAV_PREFIXES = [PATH_SCAN, PATH_SETTINGS] as const;
+const ENABLED_NAV_PREFIXES = [PATH_SCAN, PATH_DEEP_SCANS, PATH_SETTINGS] as const;
 
 export function isAmcLiteNavHrefEnabled(href: string): boolean {
   const path = normalizePathnameForAmcLite(href);
@@ -151,7 +155,7 @@ export type AmcLiteNavEntry = {
 export const AMC_LITE_NAV_ENTRIES: AmcLiteNavEntry[] = [
   { labelKey: 'nav.dashboard', path: '/', icon: 'dashboard', exact: true, enabled: false },
   { labelKey: 'nav.newScan', path: PATH_SCAN, icon: 'search', enabled: true },
-  { labelKey: 'nav.deepScans', path: '/deep-scans', icon: 'dataset', enabled: false },
+  { labelKey: 'nav.deepScans', path: PATH_DEEP_SCANS, icon: 'dataset', enabled: true },
   { labelKey: 'nav.projects', path: '/projects', icon: 'folder', enabled: false },
   { labelKey: 'nav.developers', path: '/developers', icon: 'code', enabled: false },
 ];

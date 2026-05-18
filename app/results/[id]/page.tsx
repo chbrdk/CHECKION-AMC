@@ -111,7 +111,7 @@ import { InfoTooltip } from '@/components/InfoTooltip';
 import { PaginationBar } from '@/components/PaginationBar';
 import { RESULTS_ISSUES_PAGE_SIZE } from '@/lib/constants';
 import { resultsIssuesOneBasedPageForFilteredIndex } from '@/lib/results-issues-ui';
-import { amcMobileFlushCardSx, amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
+import { amcMobileFlushCardSx, amcMobileFlushNestedCardSx, amcMobileFlushPageShellSx } from '@/lib/amc-page-shell';
 import { AmcResponsiveTabs } from '@/components/amc/AmcResponsiveTabs';
 import { ResultsPageHeader } from '@/components/results/ResultsPageHeader';
 import { ResultsIssueFilters } from '@/components/results/ResultsIssueFilters';
@@ -628,7 +628,7 @@ export default function ResultsPage() {
             <MsqdxMoleculeCard
                 variant="flat"
                 borderRadius="lg"
-                sx={{ bgcolor: 'var(--color-card-bg)', ...amcMobileFlushCardSx, py: { xs: 'var(--msqdx-spacing-md)', md: undefined } }}
+                sx={{ bgcolor: 'var(--color-card-bg)', ...amcMobileFlushCardSx }}
             >
             {compact && !isAmcResultsViewModeSelectorOnMobileEnabled() && (
                 <ResultsMobileViewNav
@@ -666,7 +666,7 @@ export default function ResultsPage() {
                             <MsqdxMoleculeCard
                                 variant="flat"
                                 borderRadius="lg"
-                                sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                                sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}
                                 chips={
                                     <>
                                         <MsqdxChip label={result.standard} size="small" sx={{ backgroundColor: alpha(MSQDX_BRAND_PRIMARY.purple, 0.12), color: MSQDX_BRAND_PRIMARY.purple, fontWeight: 600, fontSize: '0.7rem', mr: 1 }} />
@@ -703,7 +703,7 @@ export default function ResultsPage() {
                                         key="classification"
                                         variant="flat"
                                         borderRadius="lg"
-                                        sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                                        sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}
                                         title={t('results.pageClassificationTitle')}
                                         subtitle={t('results.pageClassificationSubtitle')}
                                         headerActions={<InfoTooltip title={t('info.pageClassification')} ariaLabel={t('common.info')} placement="bottom" />}
@@ -762,7 +762,7 @@ export default function ResultsPage() {
                     <MsqdxMoleculeCard
                         variant="flat"
                         borderRadius="lg"
-                        sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                        sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}
                         chips={
                             <>
                                 <MsqdxChip label={result.standard} size="small" sx={{ backgroundColor: alpha(MSQDX_BRAND_PRIMARY.purple, 0.12), color: MSQDX_BRAND_PRIMARY.purple, fontWeight: 600, fontSize: '0.7rem', mr: 1 }} />
@@ -798,7 +798,7 @@ export default function ResultsPage() {
                     headerActions={<InfoTooltip title={t('info.uxCxCheck')} ariaLabel={t('common.info')} />}
                     subtitle="Heuristische Evaluation gemäß DIN EN ISO 9241-110 (Dialogprinzipien)"
                     variant="flat"
-                    sx={{ bgcolor: 'var(--color-card-bg)', color: 'var(--color-text-on-light)', border: '1px solid var(--color-card-border)' }}
+                    sx={{ bgcolor: 'var(--color-card-bg)', color: 'var(--color-text-on-light)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}
                     borderRadius="lg"
                 >
                     {result.llmSummary && isUxCheckV2Summary(result.llmSummary) ? (
@@ -882,7 +882,7 @@ export default function ResultsPage() {
                 <MsqdxMoleculeCard
                     title="Gefundene Issues"
                     variant="flat"
-                    sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                    sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}
                     borderRadius="lg"
                     headerActions={
                         compact ? (
@@ -1075,7 +1075,7 @@ export default function ResultsPage() {
                 <MsqdxMoleculeCard
                     title="Visuelle Analyse"
                     variant="flat"
-                    sx={{ bgcolor: 'var(--color-card-bg)', mb: 'var(--msqdx-spacing-md)', border: '1px solid var(--color-card-border)' }}
+                    sx={{ bgcolor: 'var(--color-card-bg)', mb: 'var(--msqdx-spacing-md)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}
                     borderRadius="xs"
                     headerActions={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -1319,7 +1319,7 @@ export default function ResultsPage() {
                     title="User Experience Issues"
                     headerActions={<InfoTooltip title={t('info.uxIssues')} ariaLabel={t('common.info')} />}
                     subtitle="User Experience Issues"
-                    sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                    sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}
                 >
                     {result.ux ? (
                         <UxIssueList ux={result.ux} />
@@ -1352,7 +1352,7 @@ export default function ResultsPage() {
                         title={t('results.structureSemanticsCardTitle')}
                         headerActions={<InfoTooltip title={t('info.structureSemantics')} ariaLabel={t('common.info')} />}
                         subtitle={t('results.structureSemanticsCardSubtitle')}
-                        sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}
+                        sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}
                     >
                         {!hasStructure ? (
                             <MsqdxTypography variant="body2" sx={{ color: 'var(--color-text-muted-on-light)', mb: 2 }}>
@@ -1442,13 +1442,13 @@ export default function ResultsPage() {
                     {result.seo ? (
                         <SeoCard seo={result.seo} />
                     ) : (
-                        <MsqdxMoleculeCard title="SEO Audit" subtitle="No SEO data." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}><MsqdxTypography>Keine SEO Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
+                        <MsqdxMoleculeCard title="SEO Audit" subtitle="No SEO data." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}><MsqdxTypography>Keine SEO Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
                     )}
 
                     {result.links ? (
                         <LinkAuditCard links={result.links} />
                     ) : (
-                        <MsqdxMoleculeCard title="Link Audit" subtitle="No Link data." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}><MsqdxTypography>Keine Link Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
+                        <MsqdxMoleculeCard title="Link Audit" subtitle="No Link data." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}><MsqdxTypography>Keine Link Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
                     )}
                 </Box>
             )}
@@ -1466,13 +1466,13 @@ export default function ResultsPage() {
                             technicalInsights={result.technicalInsights}
                         />
                     ) : (
-                        <MsqdxMoleculeCard title="Infrastruktur" subtitle="No data." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}><MsqdxTypography>Keine Infrastruktur-Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
+                        <MsqdxMoleculeCard title="Infrastruktur" subtitle="No data." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}><MsqdxTypography>Keine Infrastruktur-Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
                     )}
 
                     {result.privacy ? (
                         <PrivacyCard privacy={result.privacy} consentSignals={result.consentSignals} />
                     ) : (
-                        <MsqdxMoleculeCard title="Privacy Audit" subtitle="No Privacy data." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}><MsqdxTypography>Keine Privacy-Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
+                        <MsqdxMoleculeCard title="Privacy Audit" subtitle="No Privacy data." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}><MsqdxTypography>Keine Privacy-Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
                     )}
 
                     {result.security ? (
@@ -1494,7 +1494,7 @@ export default function ResultsPage() {
                     {result.generative ? (
                         <GenerativeOptimizerCard data={result.generative} ymyl={result.ymyl} geo={result.geo} />
                     ) : (
-                        <MsqdxMoleculeCard title="GEO-Analyse" subtitle="Keine Daten." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)' }}><MsqdxTypography>Keine GEO-Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
+                        <MsqdxMoleculeCard title="GEO-Analyse" subtitle="Keine Daten." sx={{ bgcolor: 'var(--color-card-bg)', border: '1px solid var(--color-card-border)', ...amcMobileFlushNestedCardSx }}><MsqdxTypography>Keine GEO-Daten verfügbar.</MsqdxTypography></MsqdxMoleculeCard>
                     )}
                 </>
             )}

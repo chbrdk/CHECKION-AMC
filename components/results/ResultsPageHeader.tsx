@@ -3,7 +3,7 @@
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { MsqdxTypography } from '@msqdx/react';
 import { InfoTooltip } from '@/components/InfoTooltip';
-import { amcMobileFlushCardSx } from '@/lib/amc-page-shell';
+import { amcMobileFlushBoxSx } from '@/lib/amc-page-shell';
 
 export type ResultsPageHeaderProps = {
   title: string;
@@ -35,8 +35,7 @@ export function ResultsPageHeader({
         mb: 'var(--msqdx-spacing-sm)',
         bgcolor: 'var(--color-card-bg)',
         borderRadius: 'var(--msqdx-radius-lg, 12px)',
-        ...amcMobileFlushCardSx,
-        py: { xs: 'var(--msqdx-spacing-md)', md: 'var(--msqdx-spacing-md)' },
+        ...amcMobileFlushBoxSx,
       }}
     >
       {compact ? (

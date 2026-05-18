@@ -75,8 +75,13 @@ export function isAmcGeoEeatRoute(pathname: string): boolean {
   return path === PATH_GEO_EEAT || path.startsWith(`${PATH_GEO_EEAT}/`);
 }
 
+export function isAmcResultsRoute(pathname: string): boolean {
+  const path = normalizePathnameForAmcLite(pathname);
+  return path === PATH_RESULTS || path.startsWith(`${PATH_RESULTS}/`);
+}
+
 export function isAmcMobileMainFlushHorizontal(pathname: string): boolean {
-  return isAmcScanRoute(pathname) || isAmcGeoEeatRoute(pathname);
+  return isAmcScanRoute(pathname) || isAmcGeoEeatRoute(pathname) || isAmcResultsRoute(pathname);
 }
 
 /** Path prefixes allowed without redirect to /scan */

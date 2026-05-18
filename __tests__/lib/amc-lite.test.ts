@@ -11,6 +11,7 @@ import {
   isAmcSettingsAboutEnabled,
   isAmcSettingsApiTokensEnabled,
   isAmcGeoEeatRoute,
+  isAmcResultsRoute,
   isAmcMobileMainFlushHorizontal,
   isAmcScanPageHeaderEnabled,
   isAmcScanRoute,
@@ -89,14 +90,17 @@ describe('amc-lite routes', () => {
     expect(isAmcScanPageHeaderEnabled()).toBe(false);
   });
 
-  it('flushes horizontal padding on /scan and /geo-eeat for mobile main content', () => {
+  it('flushes horizontal padding on /scan, /geo-eeat, and /results for mobile main content', () => {
     expect(isAmcScanRoute('/scan')).toBe(true);
     expect(isAmcScanRoute('/scan/domain')).toBe(true);
     expect(isAmcScanRoute('/settings')).toBe(false);
     expect(isAmcGeoEeatRoute('/geo-eeat/job-1')).toBe(true);
     expect(isAmcGeoEeatRoute('/settings')).toBe(false);
+    expect(isAmcResultsRoute('/results/abc')).toBe(true);
+    expect(isAmcResultsRoute('/settings')).toBe(false);
     expect(isAmcMobileMainFlushHorizontal('/scan')).toBe(true);
     expect(isAmcMobileMainFlushHorizontal('/geo-eeat/abc')).toBe(true);
+    expect(isAmcMobileMainFlushHorizontal('/results/abc')).toBe(true);
     expect(isAmcMobileMainFlushHorizontal('/settings')).toBe(false);
   });
 });

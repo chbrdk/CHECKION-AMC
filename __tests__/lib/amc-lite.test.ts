@@ -42,9 +42,9 @@ describe('amc-lite routes', () => {
     expect(isAmcLitePublicPath('/journey-agent/job')).toBe(false);
   });
 
-  it('enables scan, deep scans, and settings in sidebar nav', () => {
+  it('enables scan and settings in sidebar nav (deep scans stay upgrade-locked)', () => {
     expect(isAmcLiteNavHrefEnabled('/scan')).toBe(true);
-    expect(isAmcLiteNavHrefEnabled('/deep-scans')).toBe(true);
+    expect(isAmcLiteNavHrefEnabled('/deep-scans')).toBe(false);
     expect(isAmcLiteNavHrefEnabled('/settings')).toBe(true);
     expect(isAmcLiteNavHrefEnabled('/projects')).toBe(false);
     expect(isAmcLiteNavHrefEnabled('/developers')).toBe(false);

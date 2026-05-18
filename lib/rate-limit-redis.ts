@@ -65,7 +65,9 @@ function redisHostForLog(url: string): string {
 
 /** Errors that usually mean misconfiguration or unreachable Redis — stop retrying for a while. */
 function shouldTripCircuit(message: string): boolean {
-    return /EAI_AGAIN|ENOTFOUND|ECONNREFUSED|ETIMEDOUT|getaddrinfo|WRONGPASS|NOAUTH/i.test(message);
+    return /EAI_AGAIN|ENOTFOUND|ECONNREFUSED|ETIMEDOUT|getaddrinfo|WRONGPASS|NOAUTH|client is closed|Socket closed/i.test(
+        message
+    );
 }
 
 function tearDownInstance(c: RedisClientType): void {
@@ -74,7 +76,12 @@ function tearDownInstance(c: RedisClientType): void {
     } catch {
         /* ignore */
     }
-    void c.disconnect().catch(() => {});
+    try {
+        if (c.isOpen) void c.disconnect().catch(() => {});
+        else void c.quit().catch(() => {});
+    } catch {
+        /* ignore sync disconnect errors */
+    }
 }
 
 function detachClient(c: RedisClientType | null): void {
@@ -154,12 +161,21 @@ export async function checkRateLimitRedis(
     max: number,
     windowMs: number
 ): Promise<RateLimitRedisResult | null> {
-    const c = await getRedisClient();
-    if (!c?.isReady) return null;
+    let c: RedisClientType | null;
+    try {
+        c = await getRedisClient();
+    } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        if (shouldTripCircuit(msg)) scheduleCircuit(msg);
+        else console.error('[CHECKION] Redis rate-limit get client failed:', msg);
+        return null;
+    }
+    if (!c?.isOpen || !c.isReady) return null;
     const now = Date.now();
     const member = `${now}-${Math.random().toString(36).slice(2, 12)}`;
     const redisKey = `checkion:rl:${bucket}:${storageKey}`;
     try {
+        if (!c.isOpen || !c.isReady) return null;
         const raw = (await c.sendCommand([
             'EVAL',
             LUA_SLIDING_WINDOW,

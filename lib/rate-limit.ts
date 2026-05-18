@@ -85,8 +85,13 @@ function checkRateLimitMemory(key: string, bucket: RateLimitBucket): RateLimitRe
  */
 export async function checkRateLimit(key: string, bucket: RateLimitBucket = 'default'): Promise<RateLimitResult> {
     const { max, windowMs } = limitsForBucket(bucket);
-    const redisResult = await checkRateLimitRedis(key, bucket, max, windowMs);
-    if (redisResult != null) return redisResult;
+    try {
+        const redisResult = await checkRateLimitRedis(key, bucket, max, windowMs);
+        if (redisResult != null) return redisResult;
+    } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.error('[CHECKION] Redis rate-limit failed, using in-memory fallback:', msg);
+    }
     return checkRateLimitMemory(key, bucket);
 }
 

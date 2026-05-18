@@ -26,6 +26,17 @@ describe('rate-limit', () => {
         expect(getClientIpForRateLimit(req)).toBe('203.0.113.1');
     });
 
+    it('falls back to memory when Redis rate-limit throws', async () => {
+        vi.doMock('@/lib/rate-limit-redis', () => ({
+            checkRateLimitRedis: vi.fn().mockRejectedValue(new Error('The client is closed')),
+        }));
+        const { checkRateLimit, __resetRateLimitStoresForTests } = await import('@/lib/rate-limit');
+        __resetRateLimitStoresForTests();
+        const result = await checkRateLimit('register:1.2.3.4', 'register');
+        expect(result.allowed).toBe(true);
+        vi.doUnmock('@/lib/rate-limit-redis');
+    });
+
     it('register bucket is independent of default bucket', async () => {
         const { checkRateLimit, __resetRateLimitStoresForTests } = await import('@/lib/rate-limit');
         __resetRateLimitStoresForTests();

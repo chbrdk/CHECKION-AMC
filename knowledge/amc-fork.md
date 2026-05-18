@@ -41,7 +41,9 @@ git merge upstream/main
 | `AUTH_URL` | `https://amc.projects-a.plygrnd.tech` |
 | `AUTH_SECRET` | Eigen (32+ Zeichen), nicht mit Production teilen |
 | `CHECKION_RUN_SCHEMA_PUSH` | **nicht setzen** (Default: skip) |
-| `CHECKION_*_ON_START` | **nicht setzen** |
+| `CHECKION_*_ON_START` | **nicht setzen** (Backfill/Sync von Haupt-CHECKION übernehmen führt zu Startup-Fehlern) |
+| `REDIS_URL` | Entweder erreichbar konfigurieren **oder** weglassen |
+| `CHECKION_DISABLE_REDIS_RATE_LIMIT` | `1` empfohlen, wenn AMC kein Redis hat (verhindert 500 bei Register/Scan bei DNS-Fehler `EAI_AGAIN`) |
 
 Repo in Coolify auf **CHECKION-AMC** umstellen (nicht CHECKION).
 

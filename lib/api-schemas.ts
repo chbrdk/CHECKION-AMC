@@ -124,7 +124,7 @@ export const geoEeatCompetitiveOnlyBodySchema = z.object({
 
 /** Password complexity: min 8 chars, at least one uppercase, one lowercase, one digit */
 const PASSWORD_MIN_LENGTH = 8;
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`)
   .refine((p) => /[A-Z]/.test(p), 'Password must contain at least one uppercase letter')

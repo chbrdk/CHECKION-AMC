@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
-import { Box, Stack } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, Stack } from '@mui/material';
 import {
     MsqdxButton,
     MsqdxFormField,
@@ -20,7 +20,6 @@ import { API_AUTH_REGISTER, PATH_LOGIN, PATH_SCAN } from '@/lib/constants';
 type RegisterResponse = {
     success?: boolean;
     error?: string;
-    login?: { email: string; password: string };
 };
 
 function RegisterForm() {
@@ -32,11 +31,17 @@ function RegisterForm() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [company, setCompany] = useState('');
+    const [password, setPassword] = useState('');
+    const [marketingOptIn, setMarketingOptIn] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!marketingOptIn) {
+            setError(t('auth.register.marketingOptInRequired'));
+            return;
+        }
         setLoading(true);
         setError(null);
         try {
@@ -47,22 +52,16 @@ function RegisterForm() {
                     name: name.trim(),
                     email: email.trim(),
                     company: company.trim(),
+                    password,
+                    marketingOptIn: true,
                 }),
             });
             const data = (await res.json().catch(() => ({}))) as RegisterResponse;
             if (!res.ok) throw new Error(data.error ?? t('auth.register.error'));
 
-            const loginEmail = data.login?.email ?? email.trim();
-            const loginPassword = data.login?.password;
-            if (!loginPassword) {
-                router.replace(PATH_LOGIN);
-                router.refresh();
-                return;
-            }
-
             const result = await signIn('credentials', {
-                email: loginEmail,
-                password: loginPassword,
+                email: email.trim(),
+                password,
                 redirect: false,
                 callbackUrl: redirectTo,
             });
@@ -221,10 +220,46 @@ function RegisterForm() {
                                     fullWidth
                                     autoComplete="organization"
                                 />
+                                <Box>
+                                    <MsqdxFormField
+                                        label={t('auth.register.password')}
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
+                                        required
+                                        fullWidth
+                                        autoComplete="new-password"
+                                    />
+                                    <MsqdxTypography
+                                        variant="caption"
+                                        sx={{ display: 'block', mt: 0.5, color: 'var(--color-text-muted-on-light)' }}
+                                    >
+                                        {t('auth.register.passwordRequirements')}
+                                    </MsqdxTypography>
+                                </Box>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={marketingOptIn}
+                                            onChange={(e) => setMarketingOptIn(e.target.checked)}
+                                            required
+                                            sx={{
+                                                color: 'var(--color-theme-accent)',
+                                                '&.Mui-checked': { color: 'var(--color-theme-accent)' },
+                                            }}
+                                        />
+                                    }
+                                    label={
+                                        <MsqdxTypography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
+                                            {t('auth.register.marketingOptIn')}
+                                        </MsqdxTypography>
+                                    }
+                                    sx={{ alignItems: 'flex-start', mx: 0 }}
+                                />
                                 <MsqdxButton
                                     type="submit"
                                     variant="contained"
-                                    disabled={loading}
+                                    disabled={loading || !marketingOptIn}
                                     fullWidth
                                     sx={{
                                         mt: 'var(--msqdx-spacing-xs)',

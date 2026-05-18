@@ -366,6 +366,8 @@
       "company": "Unternehmen",
       "password": "Passwort",
       "passwordRequirements": "Min. 8 Zeichen, je 1 Groß- und Kleinbuchstabe, 1 Ziffer",
+      "marketingOptIn": "Ja – CHECKION darf mir per E-Mail Produkt-News und Marketing senden.",
+      "marketingOptInRequired": "Bitte bestätige die Einwilligung für E-Mail-Marketing.",
       "cta": "Registrieren & Scan starten",
       "ctaLoading": "Wird eingerichtet…",
       "error": "Registrierung fehlgeschlagen",

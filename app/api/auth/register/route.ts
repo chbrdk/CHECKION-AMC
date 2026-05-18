@@ -5,7 +5,8 @@
 import { NextResponse } from 'next/server';
 import { apiError, handleApiError, API_STATUS } from '@/lib/api-error-handler';
 import { parseApiBody } from '@/lib/api-schemas';
-import { amcRegisterBodySchema, generateAmcRegistrationPassword } from '@/lib/amc-register';
+import { amcRegisterBodySchema } from '@/lib/amc-register';
+import { recordAmcMarketingConsent } from '@/lib/amc-marketing-consent';
 import { checkRateLimit, getClientIpForRateLimit } from '@/lib/rate-limit';
 import { eq } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
@@ -40,7 +41,8 @@ export async function POST(request: Request) {
         const email = parsed.email.trim().toLowerCase();
         const name = parsed.name.trim();
         const company = parsed.company.trim();
-        const password = generateAmcRegistrationPassword();
+        const password = parsed.password;
+        const db = getDb();
 
         if (isPlexonAuthConfigured()) {
             const pr = await registerUserAtPlexon({ email, password, name });
@@ -51,15 +53,10 @@ export async function POST(request: Request) {
                 return apiError(pr.error || 'PLEXON registration failed.', pr.status);
             }
             await patchPlexonProfile(pr.userId, { name, company });
-            return NextResponse.json({
-                success: true,
-                userId: pr.userId,
-                plexon: true,
-                login: { email, password },
-            });
+            await recordAmcMarketingConsent(db, { userId: pr.userId, email, name, company });
+            return NextResponse.json({ success: true, userId: pr.userId, plexon: true });
         }
 
-        const db = getDb();
         const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
         if (existing.length > 0) {
             return apiError('Email already registered.', API_STATUS.CONFLICT);
@@ -74,12 +71,9 @@ export async function POST(request: Request) {
             name,
             company,
         });
+        await recordAmcMarketingConsent(db, { userId: id, email, name, company });
 
-        return NextResponse.json({
-            success: true,
-            userId: id,
-            login: { email, password },
-        });
+        return NextResponse.json({ success: true, userId: id });
     } catch (e) {
         return handleApiError(e, { context: 'Register failed', publicMessage: 'Registration failed.' });
     }

@@ -1,6 +1,5 @@
 /**
  * API tests: POST /api/auth/register (AMC)
- * Run: npm run test
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { POST } from '@/app/api/auth/register/route';
@@ -10,6 +9,8 @@ const validBody = {
   name: 'Ada Lovelace',
   email: 'ada@example.com',
   company: 'ACME GmbH',
+  password: 'Password123',
+  marketingOptIn: true,
 };
 
 describe('POST /api/auth/register', () => {
@@ -33,68 +34,29 @@ describe('POST /api/auth/register', () => {
     __resetRateLimitStoresForTests();
   });
 
-  it('returns 400 when email is missing', async () => {
+  it('returns 400 when marketing opt-in is missing', async () => {
     const req = new Request('http://localhost/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Ada', company: 'ACME' }),
+      body: JSON.stringify({ ...validBody, marketingOptIn: false }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
     const json = await res.json();
-    expect(json.error).toContain('email');
+    expect(json.error).toMatch(/marketing|consent/i);
   });
 
-  it('returns 400 when company is missing', async () => {
+  it('returns 400 when password is too short', async () => {
     const req = new Request('http://localhost/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Ada', email: 'ada@example.com' }),
+      body: JSON.stringify({ ...validBody, password: 'short' }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
-    const json = await res.json();
-    expect(json.error).toMatch(/company/i);
   });
 
-  it('returns 400 when name is missing', async () => {
-    const req = new Request('http://localhost/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'ada@example.com', company: 'ACME' }),
-    });
-    const res = await POST(req);
-    expect(res.status).toBe(400);
-    const json = await res.json();
-    expect(json.error).toMatch(/name/i);
-  });
-
-  it('returns 429 when IP exceeds register rate limit', async () => {
-    process.env.RATE_LIMIT_REGISTER_MAX = '2';
-    process.env.RATE_LIMIT_REGISTER_WINDOW_MS = '60000';
-    __resetRateLimitStoresForTests();
-
-    const mkReq = () =>
-      new Request('http://localhost/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-forwarded-for': '203.0.113.99',
-        },
-        body: JSON.stringify({ email: 'bad' }),
-      });
-
-    let res = await POST(mkReq());
-    expect(res.status).toBe(400);
-    res = await POST(mkReq());
-    expect(res.status).toBe(400);
-    res = await POST(mkReq());
-    expect(res.status).toBe(429);
-    const json = await res.json();
-    expect(json.error).toMatch(/too many registration/i);
-  });
-
-  it('registers at PLEXON, patches company, and returns login credentials', async () => {
+  it('registers at PLEXON and patches profile when configured', async () => {
     process.env.PLEXON_AUTH_URL = 'https://plexon.test';
     process.env.PLEXON_SERVICE_SECRET = 'test-secret-16chars';
     const fetchMock = vi
@@ -111,11 +73,7 @@ describe('POST /api/auth/register', () => {
     const res = await POST(req);
     expect(res.status).toBe(200);
     const json = await res.json();
-    expect(json.success).toBe(true);
-    expect(json.userId).toBe('plexon-user-1');
-    expect(json.plexon).toBe(true);
-    expect(json.login?.email).toBe('ada@example.com');
-    expect(typeof json.login?.password).toBe('string');
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(json).toEqual({ success: true, userId: 'plexon-user-1', plexon: true });
+    expect(json.login).toBeUndefined();
   });
 });

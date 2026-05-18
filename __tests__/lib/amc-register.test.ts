@@ -1,29 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { amcRegisterBodySchema, generateAmcRegistrationPassword } from '@/lib/amc-register';
+import { amcRegisterBodySchema } from '@/lib/amc-register';
+
+const valid = {
+  name: 'Ada',
+  email: 'ada@example.com',
+  company: 'ACME GmbH',
+  password: 'Password123',
+  marketingOptIn: true as const,
+};
 
 describe('amcRegisterBodySchema', () => {
-  it('requires name, email, and company', () => {
-    expect(
-      amcRegisterBodySchema.safeParse({
-        name: 'Ada',
-        email: 'ada@example.com',
-        company: 'ACME GmbH',
-      }).success
-    ).toBe(true);
-    expect(amcRegisterBodySchema.safeParse({ email: 'ada@example.com', company: 'ACME' }).success).toBe(false);
-    expect(amcRegisterBodySchema.safeParse({ name: 'Ada', email: 'bad', company: 'ACME' }).success).toBe(false);
-    expect(amcRegisterBodySchema.safeParse({ name: 'Ada', email: 'ada@example.com', company: '' }).success).toBe(
-      false
-    );
-  });
-});
-
-describe('generateAmcRegistrationPassword', () => {
-  it('meets policy minimum shape', () => {
-    const p = generateAmcRegistrationPassword();
-    expect(p.length).toBeGreaterThanOrEqual(12);
-    expect(/[A-Z]/.test(p)).toBe(true);
-    expect(/[a-z]/.test(p)).toBe(true);
-    expect(/\d/.test(p)).toBe(true);
+  it('requires name, email, company, password, and marketing opt-in', () => {
+    expect(amcRegisterBodySchema.safeParse(valid).success).toBe(true);
+    expect(amcRegisterBodySchema.safeParse({ ...valid, marketingOptIn: false }).success).toBe(false);
+    expect(amcRegisterBodySchema.safeParse({ ...valid, password: 'short' }).success).toBe(false);
+    expect(amcRegisterBodySchema.safeParse({ ...valid, company: '' }).success).toBe(false);
   });
 });

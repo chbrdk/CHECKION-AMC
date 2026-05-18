@@ -26,7 +26,7 @@ git merge upstream/main
 ## AMC-spezifisches Verhalten
 
 - **Registrierung:** `/register` mit **Name**, **E-Mail**, **Unternehmen**, **Passwort** und verpflichtendem **Marketing-Opt-in**. Nach erfolgreicher Registrierung automatischer Login → `/scan`. Gäste ohne Session landen zuerst auf `/register`.
-- **Marketing-Einwilligung:** Tabelle `user_marketing_consents` (Migration `lib/db/migrations/0022_user_marketing_consents.sql`). **Einmalig** auf der gemeinsamen DB ausführen (AMC startet kein `drizzle-kit push`), z. B. im CHECKION-Container oder per `psql`.
+- **Marketing-Einwilligung:** Tabelle `user_marketing_consents` lebt im **Haupt-Repo CHECKION** (Migration `0022`, `drizzle-kit push` beim CHECKION-Deploy). AMC schreibt nur Daten; kein eigenes Schema-Push. Siehe `CHECKION/knowledge/checkion-marketing-consents.md`.
 - **Navigation:** Alle Einträge sichtbar; nur **Scan** (Luppe) klickbar. Rest ausgegraut + Tooltip (`nav.amcLiteUpgradeTooltip`).
 - **Routen:** `proxy.ts` (Next.js 16) erlaubt `/scan`, `/results/*`, Login/Register, API. `/` → Redirect `/scan`. Alles andere → `/scan`.
 - **DB:** Gleiche `DATABASE_URL` wie Haupt-CHECKION möglich.

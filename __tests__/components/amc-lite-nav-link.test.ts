@@ -7,6 +7,8 @@ describe('AmcLiteNavLink', () => {
     const source = readFileSync(resolve(process.cwd(), 'components/AmcLiteNavLink.tsx'), 'utf8');
     expect(source).toContain('Tooltip');
     expect(source).toContain('AMC_LITE_UPGRADE_TOOLTIP_KEY');
+    expect(source).toContain("isDrawerNav ? 'bottom' : 'right'");
+    expect(source).toContain("breakpoints.down('md')");
     expect(source).toContain('cursor: \'not-allowed\'');
     expect(source).toContain('isAmcLiteNavHrefEnabled');
   });

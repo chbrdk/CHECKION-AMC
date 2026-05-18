@@ -45,6 +45,10 @@ import { readScanNdjsonStream } from '@/lib/scan-stream-parse';
 import { useStatusUi } from '@/components/status/StatusUiContext';
 import { ensureUrlWithScheme } from '@/lib/url-normalize';
 import { fetchOnceMoreOn5xx } from '@/lib/fetch-retry-5xx';
+import {
+    parseGeoEeatCompetitiveFields,
+    suggestGeoEeatCompetitiveInputs,
+} from '@/lib/geo-eeat/client-suggest-competitive';
 import { extractHostname } from '@/lib/geo-eeat/suggest-parse';
 import {
     isAmcGeoEeatCompetitiveSelectorEnabled,
@@ -245,10 +249,49 @@ function ScanPage() {
                     router.push(pathGeoEeat(jobId, { focus: 'competitive' }));
                     return;
                 } else if (geoEeatRunCompetitive) {
-                    const body: { url: string; runCompetitive?: boolean; competitors?: string[]; queries?: string[]; projectId?: string | null } = { url: startUrl! };
+                    let { competitors, queries } = parseGeoEeatCompetitiveFields(
+                        geoEeatCompetitors,
+                        geoEeatQueries
+                    );
+                    if (competitors.length === 0 && queries.length === 0) {
+                        const suggestUrl = ensureUrlWithScheme(startUrl!);
+                        if (!suggestUrl) {
+                            setError(t('scan.error'));
+                            setScanning(false);
+                            return;
+                        }
+                        setGeoEeatSuggesting(true);
+                        const suggested = await suggestGeoEeatCompetitiveInputs(
+                            suggestUrl,
+                            fetchWithSessionCookies,
+                            apiScanGeoEeatSuggestQueries
+                        );
+                        setGeoEeatSuggesting(false);
+                        if (!suggested.ok) {
+                            setError(suggested.error || t('scan.geoEeatSuggestError'));
+                            setScanning(false);
+                            return;
+                        }
+                        competitors = suggested.data.competitors;
+                        queries = suggested.data.queries;
+                        setGeoEeatCompetitors(competitors.join('\n'));
+                        setGeoEeatQueries(queries.join('\n'));
+                        if (competitors.length === 0 && queries.length === 0) {
+                            setError(t('scan.geoEeatSuggestEmpty'));
+                            setScanning(false);
+                            return;
+                        }
+                    }
+                    const body: {
+                        url: string;
+                        runCompetitive?: boolean;
+                        competitors?: string[];
+                        queries?: string[];
+                        projectId?: string | null;
+                    } = { url: startUrl! };
                     body.runCompetitive = true;
-                    body.competitors = geoEeatCompetitors.trim().split(/\n/).map((s) => s.trim()).filter(Boolean);
-                    body.queries = geoEeatQueries.trim().split(/\n/).map((s) => s.trim()).filter(Boolean);
+                    body.competitors = competitors;
+                    body.queries = queries;
                     if (selectedProjectId) body.projectId = selectedProjectId;
                     const res = await fetchWithSessionCookies(apiScanGeoEeatCreate, {
                         method: 'POST',

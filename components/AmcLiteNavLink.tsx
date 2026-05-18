@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import NextLink from 'next/link';
 import { Box, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { useI18n } from '@/components/i18n/I18nProvider';
+import { AMC_ADMIN_NAV_TOOLTIP_Z_INDEX } from '@/lib/constants';
 import { AMC_LITE_UPGRADE_TOOLTIP_KEY, isAmcLiteNavHrefEnabled } from '@/lib/amc-lite';
 
 export type AmcLiteNavLinkProps = {
@@ -33,6 +34,11 @@ export function AmcLiteNavLink({ href, children, target, rel }: AmcLiteNavLinkPr
       title={t(AMC_LITE_UPGRADE_TOOLTIP_KEY)}
       placement={isDrawerNav ? 'bottom' : 'right'}
       arrow
+      slotProps={{
+        popper: {
+          sx: { zIndex: AMC_ADMIN_NAV_TOOLTIP_Z_INDEX },
+        },
+      }}
     >
       <Box
         component="span"

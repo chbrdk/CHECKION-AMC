@@ -9,6 +9,7 @@ describe('AmcLiteNavLink', () => {
     expect(source).toContain('AMC_LITE_UPGRADE_TOOLTIP_KEY');
     expect(source).toContain("isDrawerNav ? 'bottom' : 'right'");
     expect(source).toContain("breakpoints.down('md')");
+    expect(source).toContain('AMC_ADMIN_NAV_TOOLTIP_Z_INDEX');
     expect(source).toContain('cursor: \'not-allowed\'');
     expect(source).toContain('isAmcLiteNavHrefEnabled');
   });

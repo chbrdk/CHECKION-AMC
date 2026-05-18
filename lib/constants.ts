@@ -181,6 +181,11 @@ export const LAYOUT_MAX_CONTENT_WIDTH_PX = 1600;
  */
 export const APP_LAYOUT_INNER_BORDER_WIDTH_PX = 3;
 
+/** MsqdxAdminNav mobile drawer — keep in sync with @msqdx/react `ADMIN_NAV_ROOT_Z_INDEX.xs`. */
+export const AMC_ADMIN_NAV_DRAWER_Z_INDEX = 100_002;
+/** Tooltips on locked nav items: above drawer and AppShell menu button (100_003). */
+export const AMC_ADMIN_NAV_TOOLTIP_Z_INDEX = 100_004;
+
 // ─── API Routes ────────────────────────────────────────────────────────────
 /** Base path for API URLs (e.g. '' or '/checkion' when app is under subpath). Use for client-side fetch. */
 export const getApiBase = () => APP_BASE_URL;

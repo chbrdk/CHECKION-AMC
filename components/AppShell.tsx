@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material';
 import { MsqdxAppLayout, MsqdxIcon } from '@msqdx/react';
@@ -22,9 +22,13 @@ const HEADER_HEIGHT_MD = 64;
 export function AppShell({ children }: { children: ReactNode }) {
     const pathname = usePathname();
     const theme = useTheme();
-    /** Matches MsqdxAdminNav drawer: overlay + menu control below `lg`. */
-    const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
-    const [mobileNavOpen, setMobileNavOpen] = useState(true);
+    /** Matches MsqdxAdminNav drawer: overlay below `md` (see @msqdx/react MsqdxAdminNav). */
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+    useEffect(() => {
+        if (isMobile) setMobileNavOpen(false);
+    }, [pathname, isMobile]);
     const isAuthPage = AUTH_PATHS.some(p => pathname === p || pathname?.startsWith(p + '/'));
     const isSharePage = SHARE_PATHS.some(p => pathname === p || pathname?.startsWith(p + '/'));
 

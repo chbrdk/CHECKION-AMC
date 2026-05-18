@@ -23,7 +23,7 @@ export type SidebarProps = {
 };
 
 /** AMC fork: all nav labels visible; only scan is navigable (see AmcLiteNavLink). */
-export function Sidebar({ open = true, onClose = () => {} }: SidebarProps) {
+export function Sidebar({ open = false, onClose = () => {} }: SidebarProps) {
     const pathname = usePathname();
     const { t } = useI18n();
 

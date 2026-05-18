@@ -64,6 +64,11 @@ export function isAmcScanPageHeaderEnabled(): boolean {
   return false;
 }
 
+/** AMC demo: no view-mode dropdown on mobile results (overview only; tabs from md up). */
+export function isAmcResultsViewModeSelectorOnMobileEnabled(): boolean {
+  return false;
+}
+
 /** AMC demo: /scan uses full-width content on mobile (no horizontal main/page padding). */
 export function isAmcScanRoute(pathname: string): boolean {
   const path = normalizePathnameForAmcLite(pathname);

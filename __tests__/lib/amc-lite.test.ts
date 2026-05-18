@@ -14,6 +14,7 @@ import {
   isAmcResultsRoute,
   isAmcMobileMainFlushHorizontal,
   isAmcScanPageHeaderEnabled,
+  isAmcResultsViewModeSelectorOnMobileEnabled,
   isAmcScanRoute,
   isAmcSettingsScanConfigEnabled,
   normalizePathnameForAmcLite,
@@ -88,6 +89,10 @@ describe('amc-lite routes', () => {
 
   it('merges scan page title into config card (no duplicate header)', () => {
     expect(isAmcScanPageHeaderEnabled()).toBe(false);
+  });
+
+  it('hides results view-mode dropdown on mobile', () => {
+    expect(isAmcResultsViewModeSelectorOnMobileEnabled()).toBe(false);
   });
 
   it('flushes horizontal padding on /scan, /geo-eeat, and /results for mobile main content', () => {

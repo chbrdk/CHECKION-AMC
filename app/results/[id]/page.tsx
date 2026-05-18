@@ -117,6 +117,7 @@ import { ResultsPageHeader } from '@/components/results/ResultsPageHeader';
 import { ResultsIssueFilters } from '@/components/results/ResultsIssueFilters';
 import { PageClassificationTierAccordion } from '@/components/results/PageClassificationTierAccordion';
 import { shortenResultsViewModeLabel, type ResultsViewMode } from '@/lib/results/view-modes';
+import { isAmcResultsViewModeSelectorOnMobileEnabled } from '@/lib/amc-lite';
 
 function UxCheckV2Content({ summary }: { summary: UxCheckV2Summary }) {
     const { structured, modelUsed, generatedAt } = summary;
@@ -590,17 +591,19 @@ export default function ResultsPage() {
                 borderRadius="lg"
                 sx={{ bgcolor: 'var(--color-card-bg)', ...amcMobileFlushCardSx, py: { xs: 'var(--msqdx-spacing-md)', md: undefined } }}
             >
-            <Box sx={{ mb: 'var(--msqdx-spacing-md)', display: 'flex', alignItems: compact ? 'stretch' : 'center', gap: 1, flexDirection: compact ? 'column' : 'row' }}>
-                <InfoTooltip title={t('info.viewModes')} ariaLabel={t('common.info')} placement="bottom" />
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <AmcResponsiveTabs
-                        value={viewMode}
-                        onChange={(v) => setViewMode(v as typeof viewMode)}
-                        tabs={viewModeTabs}
-                        selectLabel={t('results.viewModeSelectLabel')}
-                    />
+            {(!compact || isAmcResultsViewModeSelectorOnMobileEnabled()) && (
+                <Box sx={{ mb: 'var(--msqdx-spacing-md)', display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <InfoTooltip title={t('info.viewModes')} ariaLabel={t('common.info')} placement="bottom" />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <AmcResponsiveTabs
+                            value={viewMode}
+                            onChange={(v) => setViewMode(v as typeof viewMode)}
+                            tabs={viewModeTabs}
+                            selectLabel={t('results.viewModeSelectLabel')}
+                        />
+                    </Box>
                 </Box>
-            </Box>
+            )}
 
             {viewMode === 'overview' && (
                 (result.pageClassification || result.eco || result.performance || result.ux) ? (

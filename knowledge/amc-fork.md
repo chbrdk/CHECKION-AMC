@@ -37,7 +37,7 @@ git merge upstream/main
 - **WCAG-Standard:** Kein Level-Dropdown auf `/scan`; Scans laufen fest mit **WCAG 2.1 AA** (`isAmcScanWcagStandardSelectorEnabled()` → `false`).
 - **Scan-Engines:** Kein Engine-Picker; fest **axe-core + HTML CodeSniffer** (`isAmcScanRunnerSelectorEnabled()` → `false`).
 - **Scan-Seite:** Kein separater Seitenkopf — **Neuer Scan** + Beschreibung stehen in der Konfigurationskarte (`isAmcScanPageHeaderEnabled()` → `false`). Auf Mobile kein horizontales Padding (`isAmcMobileMainFlushHorizontal()` für `/scan`, `/results/*` und `/geo-eeat/*`, siehe `lib/amc-page-shell.ts`).
-- **Scan-Ergebnisse (Mobile):** 9 Ansichten als Dropdown; Header mit Score; Issue-Filter als Selects; PDF/Gerät in der Scan-Karte; Karten-Innenpadding auf Flush-Pages (`components/results/*`, `components/amc/AmcResponsiveTabs.tsx`).
+- **Scan-Ergebnisse (Mobile):** Nur **Übersicht** (kein Ansichten-Dropdown); ab Tablet Tabs wie im Hauptprodukt; Header mit Score; Issue-Filter als Selects in „Liste & Details“; PDF/Gerät in der Scan-Karte (`isAmcResultsViewModeSelectorOnMobileEnabled()` → `false`).
 - **GEO-Ergebnisse (Mobile):** Phase 1: Toolbar, Sprungnavigation, vertikale Metriken, Kurz-Modelllabels, Diagramm ab `md`, volle Balkenbreite, 2-Zeilen-Queries. Phase 2: Sticky Action Bar (Teilen/Rerun), Run/Modell als Select, Zitationen vertikal, Chips „+N mehr“, Reasoning einklappbar, Karten-Innenpadding auf Flush-Pages (`lib/amc-page-shell.ts`).
 - **Einstellungen:** Nur Profil, Erscheinungsbild, Passwort und Abmelden — kein **Standard-Konfiguration**, kein **API-Zugang**, kein **Über CHECKION** (`isAmcSettingsScanConfigEnabled()` / `isAmcSettingsApiTokensEnabled()` / `isAmcSettingsAboutEnabled()` → `false`).
 

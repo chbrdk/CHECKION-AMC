@@ -10,6 +10,8 @@ Unter `md`: dieselbe **ScanIssueList** rendert **ScanIssueItem**-Karten (Meldung
 
 Hervorhebung weiter per CSS (`data-highlighted-index` / `data-row-index`).
 
+`size` und `borderRadius` gehören auf **`MsqdxAccordion`** (siehe `ScanIssueList.tsx`), nicht auf **`MsqdxAccordionItem`** (nur `id`, `summary`, `children`, optional `highlighted` / `highlightColor`).
+
 ## Referenzen
 
 - Results-Page: `app/results/[id]/page.tsx`

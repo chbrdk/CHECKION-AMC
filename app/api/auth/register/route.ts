@@ -1,23 +1,28 @@
 /* ------------------------------------------------------------------ */
-/*  CHECKION – POST /api/auth/register                                */
+/*  CHECKION-AMC – POST /api/auth/register                             */
 /* ------------------------------------------------------------------ */
 
 import { NextResponse } from 'next/server';
 import { apiError, handleApiError, API_STATUS } from '@/lib/api-error-handler';
-import { parseApiBody, registerBodySchema } from '@/lib/api-schemas';
+import { parseApiBody } from '@/lib/api-schemas';
+import { amcRegisterBodySchema, generateAmcRegistrationPassword } from '@/lib/amc-register';
 import { checkRateLimit, getClientIpForRateLimit } from '@/lib/rate-limit';
 import { eq } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
-import { isPlexonAuthConfigured, registerUserAtPlexon } from '@/lib/plexon-auth';
+import {
+  isPlexonAuthConfigured,
+  patchPlexonProfile,
+  registerUserAtPlexon,
+} from '@/lib/plexon-auth';
 
 const SALT_ROUNDS = 10;
 
 export async function POST(request: Request) {
     if (!process.env.DATABASE_URL) {
-        console.error('[CHECKION] DATABASE_URL is not set');
+        console.error('[CHECKION-AMC] DATABASE_URL is not set');
         return apiError('Server misconfiguration: database not configured.', API_STATUS.UNAVAILABLE);
     }
     const ip = getClientIpForRateLimit(request);
@@ -30,11 +35,12 @@ export async function POST(request: Request) {
         );
     }
     try {
-        const parsed = await parseApiBody(request, registerBodySchema);
+        const parsed = await parseApiBody(request, amcRegisterBodySchema);
         if (parsed instanceof NextResponse) return parsed;
         const email = parsed.email.trim().toLowerCase();
-        const password = parsed.password;
-        const name = parsed.name?.trim() ?? null;
+        const name = parsed.name.trim();
+        const company = parsed.company.trim();
+        const password = generateAmcRegistrationPassword();
 
         if (isPlexonAuthConfigured()) {
             const pr = await registerUserAtPlexon({ email, password, name });
@@ -44,7 +50,13 @@ export async function POST(request: Request) {
                 }
                 return apiError(pr.error || 'PLEXON registration failed.', pr.status);
             }
-            return NextResponse.json({ success: true, userId: pr.userId, plexon: true });
+            await patchPlexonProfile(pr.userId, { name, company });
+            return NextResponse.json({
+                success: true,
+                userId: pr.userId,
+                plexon: true,
+                login: { email, password },
+            });
         }
 
         const db = getDb();
@@ -59,10 +71,15 @@ export async function POST(request: Request) {
             id,
             email,
             passwordHash,
-            name: name || null,
+            name,
+            company,
         });
 
-        return NextResponse.json({ success: true, userId: id });
+        return NextResponse.json({
+            success: true,
+            userId: id,
+            login: { email, password },
+        });
     } catch (e) {
         return handleApiError(e, { context: 'Register failed', publicMessage: 'Registration failed.' });
     }

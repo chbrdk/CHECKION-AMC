@@ -25,6 +25,7 @@ git merge upstream/main
 
 ## AMC-spezifisches Verhalten
 
+- **Registrierung:** `/register` mit **Name**, **E-Mail**, **Unternehmen** (kein Passwort-Feld). Server legt ein sicheres Passwort an, meldet den User danach automatisch an und leitet zu `/scan` weiter. Gäste ohne Session landen zuerst auf `/register` (nicht `/login`).
 - **Navigation:** Alle Einträge sichtbar; nur **Scan** (Luppe) klickbar. Rest ausgegraut + Tooltip (`nav.amcLiteUpgradeTooltip`).
 - **Routen:** `proxy.ts` (Next.js 16) erlaubt `/scan`, `/results/*`, Login/Register, API. `/` → Redirect `/scan`. Alles andere → `/scan`.
 - **DB:** Gleiche `DATABASE_URL` wie Haupt-CHECKION möglich.
@@ -45,6 +46,8 @@ Repo in Coolify auf **CHECKION-AMC** umstellen (nicht CHECKION).
 ## Code-Stellen (nur im Fork)
 
 - `lib/amc-lite.ts` — Routen-Allowlist
+- `lib/amc-register.ts` — Registrierungs-Schema + Passwort-Generierung
+- `app/register/page.tsx`, `app/api/auth/register/route.ts`
 - `proxy.ts`
 - `components/AmcLiteNavLink.tsx`, `components/Sidebar.tsx`
 - `scripts/docker-entrypoint.sh`

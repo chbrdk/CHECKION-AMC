@@ -1,10 +1,16 @@
 /**
- * API tests: POST /api/auth/register (validation paths)
+ * API tests: POST /api/auth/register (AMC)
  * Run: npm run test
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { POST } from '@/app/api/auth/register/route';
 import { __resetRateLimitStoresForTests } from '@/lib/rate-limit';
+
+const validBody = {
+  name: 'Ada Lovelace',
+  email: 'ada@example.com',
+  company: 'ACME GmbH',
+};
 
 describe('POST /api/auth/register', () => {
   const originalEnv = process.env;
@@ -31,7 +37,7 @@ describe('POST /api/auth/register', () => {
     const req = new Request('http://localhost/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: 'Password123' }),
+      body: JSON.stringify({ name: 'Ada', company: 'ACME' }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -39,65 +45,31 @@ describe('POST /api/auth/register', () => {
     expect(json.error).toContain('email');
   });
 
-  it('returns 400 when email is invalid', async () => {
+  it('returns 400 when company is missing', async () => {
     const req = new Request('http://localhost/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'not-an-email', password: 'Password123' }),
+      body: JSON.stringify({ name: 'Ada', email: 'ada@example.com' }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
     const json = await res.json();
-    expect(json.error).toMatch(/valid email/i);
+    expect(json.error).toMatch(/company/i);
   });
 
-  it('returns 400 when password is too short', async () => {
+  it('returns 400 when name is missing', async () => {
     const req = new Request('http://localhost/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'test@example.com', password: 'short' }),
+      body: JSON.stringify({ email: 'ada@example.com', company: 'ACME' }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
     const json = await res.json();
-    expect(json.error).toMatch(/8 characters?/i);
+    expect(json.error).toMatch(/name/i);
   });
 
-  it('returns 400 when password is missing', async () => {
-    const req = new Request('http://localhost/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'test@example.com' }),
-    });
-    const res = await POST(req);
-    expect(res.status).toBe(400);
-  });
-
-  it('returns 400 when password lacks uppercase', async () => {
-    const req = new Request('http://localhost/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'test@example.com', password: 'password123' }),
-    });
-    const res = await POST(req);
-    expect(res.status).toBe(400);
-    const json = await res.json();
-    expect(json.error).toMatch(/uppercase/i);
-  });
-
-  it('returns 400 when password lacks lowercase', async () => {
-    const req = new Request('http://localhost/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'test@example.com', password: 'PASSWORD123' }),
-    });
-    const res = await POST(req);
-    expect(res.status).toBe(400);
-    const json = await res.json();
-    expect(json.error).toMatch(/lowercase/i);
-  });
-
-  it('returns 429 when IP exceeds register rate limit (before body validation)', async () => {
+  it('returns 429 when IP exceeds register rate limit', async () => {
     process.env.RATE_LIMIT_REGISTER_MAX = '2';
     process.env.RATE_LIMIT_REGISTER_WINDOW_MS = '60000';
     __resetRateLimitStoresForTests();
@@ -109,7 +81,7 @@ describe('POST /api/auth/register', () => {
           'Content-Type': 'application/json',
           'x-forwarded-for': '203.0.113.99',
         },
-        body: JSON.stringify({ password: 'Password123' }),
+        body: JSON.stringify({ email: 'bad' }),
       });
 
     let res = await POST(mkReq());
@@ -122,41 +94,28 @@ describe('POST /api/auth/register', () => {
     expect(json.error).toMatch(/too many registration/i);
   });
 
-  it('returns 400 when password lacks digit', async () => {
-    const req = new Request('http://localhost/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'test@example.com', password: 'PasswordOnly' }),
-    });
-    const res = await POST(req);
-    expect(res.status).toBe(400);
-    const json = await res.json();
-    expect(json.error).toMatch(/digit/i);
-  });
-
-  it('registers at PLEXON and skips local insert when PLEXON auth is configured', async () => {
+  it('registers at PLEXON, patches company, and returns login credentials', async () => {
     process.env.PLEXON_AUTH_URL = 'https://plexon.test';
     process.env.PLEXON_SERVICE_SECRET = 'test-secret-16chars';
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ userId: 'plexon-user-1' }), { status: 200 })
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ userId: 'plexon-user-1' }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ user: { id: 'plexon-user-1' } }), { status: 200 }));
     globalThis.fetch = fetchMock as typeof fetch;
 
     const req = new Request('http://localhost/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'new@example.com', password: 'Password123', name: 'Ada' }),
+      body: JSON.stringify(validBody),
     });
     const res = await POST(req);
     expect(res.status).toBe(200);
     const json = await res.json();
-    expect(json).toEqual({ success: true, userId: 'plexon-user-1', plexon: true });
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://plexon.test/api/auth/register',
-      expect.objectContaining({
-        method: 'POST',
-        body: expect.stringContaining('new@example.com'),
-      })
-    );
+    expect(json.success).toBe(true);
+    expect(json.userId).toBe('plexon-user-1');
+    expect(json.plexon).toBe(true);
+    expect(json.login?.email).toBe('ada@example.com');
+    expect(typeof json.login?.password).toBe('string');
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });

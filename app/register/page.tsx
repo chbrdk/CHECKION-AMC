@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { signIn } from 'next-auth/react';
 import { Box, Stack } from '@mui/material';
 import {
     MsqdxButton,
@@ -14,14 +15,23 @@ import {
 import { MSQDX_TYPOGRAPHY } from '@msqdx/tokens';
 import { AuthBrandColorSelector } from '@/components/auth/AuthBrandColorSelector';
 import { useI18n } from '@/components/i18n/I18nProvider';
-import { API_AUTH_REGISTER, PATH_LOGIN } from '@/lib/constants';
+import { API_AUTH_REGISTER, PATH_LOGIN, PATH_SCAN } from '@/lib/constants';
 
-export default function RegisterPage() {
+type RegisterResponse = {
+    success?: boolean;
+    error?: string;
+    login?: { email: string; password: string };
+};
+
+function RegisterForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { t } = useI18n();
+    const redirectTo = searchParams.get('redirect') ?? PATH_SCAN;
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [company, setCompany] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -33,12 +43,36 @@ export default function RegisterPage() {
             const res = await fetch(API_AUTH_REGISTER, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name.trim() || undefined, email, password }),
+                body: JSON.stringify({
+                    name: name.trim(),
+                    email: email.trim(),
+                    company: company.trim(),
+                }),
             });
-            const data = await res.json().catch(() => ({}));
+            const data = (await res.json().catch(() => ({}))) as RegisterResponse;
             if (!res.ok) throw new Error(data.error ?? t('auth.register.error'));
-            router.replace(PATH_LOGIN);
-            router.refresh();
+
+            const loginEmail = data.login?.email ?? email.trim();
+            const loginPassword = data.login?.password;
+            if (!loginPassword) {
+                router.replace(PATH_LOGIN);
+                router.refresh();
+                return;
+            }
+
+            const result = await signIn('credentials', {
+                email: loginEmail,
+                password: loginPassword,
+                redirect: false,
+                callbackUrl: redirectTo,
+            });
+            if (result?.error) throw new Error(result.error);
+            if (result?.ok) {
+                router.replace(redirectTo);
+                router.refresh();
+                return;
+            }
+            throw new Error(t('auth.register.error'));
         } catch (err) {
             setError(err instanceof Error ? err.message : t('auth.register.error'));
         } finally {
@@ -50,55 +84,67 @@ export default function RegisterPage() {
         <Box
             component="main"
             sx={{
-                minHeight: '100vh',
+                minHeight: '100dvh',
                 display: 'flex',
-                flexDirection: 'row',
+                flexDirection: { xs: 'column', md: 'row' },
                 bgcolor: 'var(--audion-light-html-background-color, var(--color-secondary-dx-green))',
+                paddingLeft: 'env(safe-area-inset-left)',
+                paddingRight: 'env(safe-area-inset-right)',
+                paddingBottom: 'env(safe-area-inset-bottom)',
             }}
         >
-            {/* Left 70%: Logo + CHECKION headline */}
             <Box
                 sx={{
-                    flex: '0 0 70%',
+                    flex: { xs: '0 0 auto', md: '0 0 70%' },
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    px: 'var(--msqdx-spacing-xl)',
+                    px: { xs: 'var(--msqdx-spacing-md)', sm: 'var(--msqdx-spacing-lg)', md: 'var(--msqdx-spacing-xl)' },
+                    py: { xs: 'var(--msqdx-spacing-xl)', md: 0 },
                 }}
             >
                 <Stack alignItems="flex-start" sx={{ gap: 0 }}>
-                    <Stack direction="row" alignItems="center">
-                        <MsqdxLogo
-                            width={220}
-                            height={53}
-                            color="var(--auth-logo-color, var(--color-primary-white))"
-                        />
+                    <Stack direction="row" alignItems="center" flexWrap="wrap">
+                        <Box
+                            sx={{
+                                transform: { xs: 'scale(0.64)', sm: 'scale(0.82)', md: 'scale(1)' },
+                                transformOrigin: 'left center',
+                            }}
+                        >
+                            <MsqdxLogo
+                                width={220}
+                                height={53}
+                                color="var(--auth-logo-color, var(--color-primary-white))"
+                            />
+                        </Box>
                         <MsqdxTypography
                             variant="h4"
                             weight="light"
                             sx={{
                                 color: 'var(--auth-logo-color, var(--color-primary-white))',
-                                fontSize: '2.25rem',
-                                ml: 'var(--msqdx-spacing-xl)',
+                                fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2.25rem' },
+                                ml: { xs: 'var(--msqdx-spacing-md)', md: 'var(--msqdx-spacing-xl)' },
                             }}
                         >
                             CHECKION
                         </MsqdxTypography>
                     </Stack>
-                    <AuthBrandColorSelector />
+                    <Box sx={{ display: { xs: 'none', sm: 'block' }, mt: 1 }}>
+                        <AuthBrandColorSelector />
+                    </Box>
                 </Stack>
             </Box>
 
-            {/* Right 30%: Register card */}
             <Box
                 sx={{
-                    flex: '0 0 30%',
+                    flex: { xs: '1 1 auto', md: '0 0 30%' },
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: { xs: 'flex-start', md: 'center' },
                     justifyContent: 'center',
-                    px: 'var(--msqdx-spacing-lg)',
-                    py: 'var(--msqdx-spacing-xl)',
+                    px: { xs: 'var(--msqdx-spacing-md)', sm: 'var(--msqdx-spacing-lg)', md: 'var(--msqdx-spacing-lg)' },
+                    py: { xs: 'var(--msqdx-spacing-lg)', md: 'var(--msqdx-spacing-xl)' },
+                    pb: { xs: 'var(--msqdx-spacing-xl)', md: 'var(--msqdx-spacing-xl)' },
                 }}
             >
                 <MsqdxMoleculeCard
@@ -107,8 +153,10 @@ export default function RegisterPage() {
                     sx={{
                         width: '100%',
                         maxWidth: 360,
-                        p: 'var(--msqdx-spacing-lg)',
+                        p: { xs: 'var(--msqdx-spacing-lg)', sm: 'var(--msqdx-spacing-lg)' },
                         border: '1px solid var(--color-secondary-dx-grey-light-tint)',
+                        '& .MuiButton-root': { minHeight: 48 },
+                        '& .MuiInputBase-root': { minHeight: 48 },
                     }}
                 >
                     <Stack sx={{ gap: 'var(--msqdx-spacing-lg)' }}>
@@ -152,7 +200,9 @@ export default function RegisterPage() {
                                     label={t('auth.register.name')}
                                     value={name}
                                     onChange={(e) => setName((e.target as HTMLInputElement).value)}
+                                    required
                                     fullWidth
+                                    autoComplete="name"
                                 />
                                 <MsqdxFormField
                                     label={t('auth.register.email')}
@@ -161,20 +211,16 @@ export default function RegisterPage() {
                                     onChange={(e) => setEmail((e.target as HTMLInputElement).value)}
                                     required
                                     fullWidth
+                                    autoComplete="email"
                                 />
-                                <Box>
-                                    <MsqdxFormField
-                                        label={t('auth.register.password')}
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword((e.target as HTMLInputElement).value)}
-                                        required
-                                        fullWidth
-                                    />
-                                    <MsqdxTypography variant="caption" sx={{ display: 'block', mt: 0.5, color: 'var(--color-text-muted-on-light)' }}>
-                                        {t('auth.register.passwordRequirements')}
-                                    </MsqdxTypography>
-                                </Box>
+                                <MsqdxFormField
+                                    label={t('auth.register.company')}
+                                    value={company}
+                                    onChange={(e) => setCompany((e.target as HTMLInputElement).value)}
+                                    required
+                                    fullWidth
+                                    autoComplete="organization"
+                                />
                                 <MsqdxButton
                                     type="submit"
                                     variant="contained"
@@ -201,23 +247,34 @@ export default function RegisterPage() {
                                 {t('auth.register.link')}
                             </Link>
                         </MsqdxTypography>
-                        {typeof process.env.NEXT_PUBLIC_PLEXON_REGISTER_URL === 'string' &&
-                            process.env.NEXT_PUBLIC_PLEXON_REGISTER_URL.trim() !== '' && (
-                            <MsqdxTypography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
-                                {t('auth.register.centralHint')}{' '}
-                                <Link
-                                    href={process.env.NEXT_PUBLIC_PLEXON_REGISTER_URL.trim()}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{ color: 'inherit', fontWeight: 600 }}
-                                >
-                                    {t('auth.register.centralLink')}
-                                </Link>
-                            </MsqdxTypography>
-                        )}
                     </Stack>
                 </MsqdxMoleculeCard>
             </Box>
         </Box>
+    );
+}
+
+function RegisterFallback() {
+    const { t } = useI18n();
+    return (
+        <Box
+            sx={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: 'var(--audion-light-html-background-color, var(--color-secondary-dx-green))',
+            }}
+        >
+            {t('common.loading')}
+        </Box>
+    );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<RegisterFallback />}>
+            <RegisterForm />
+        </Suspense>
     );
 }

@@ -27,6 +27,17 @@ function redirectToScan(req: NextRequest): NextResponse {
     return NextResponse.redirect(url);
 }
 
+function redirectToRegister(req: NextRequest, redirectAfter?: string): NextResponse {
+    const basePath = getAppBasePath();
+    const url = req.nextUrl.clone();
+    url.pathname = `${basePath || ''}${PATH_REGISTER}`;
+    url.search = '';
+    if (redirectAfter) {
+        url.searchParams.set('redirect', redirectAfter);
+    }
+    return NextResponse.redirect(url);
+}
+
 export function proxy(req: NextRequest) {
     const { pathname, search } = req.nextUrl;
     const basePath = getAppBasePath();
@@ -37,6 +48,9 @@ export function proxy(req: NextRequest) {
     if (normalizedPath.startsWith('/api/')) return NextResponse.next();
 
     if (shouldRedirectHomeToScan(pathname)) {
+        if (!hasSession) {
+            return redirectToRegister(req, PATH_SCAN);
+        }
         return redirectToScan(req);
     }
 
@@ -55,11 +69,7 @@ export function proxy(req: NextRequest) {
     }
 
     if (isProtected(normalizedPath) && !hasSession) {
-        const loginUrl = req.nextUrl.clone();
-        loginUrl.pathname = `${basePath || ''}${PATH_LOGIN}`;
-        loginUrl.search = '';
-        loginUrl.searchParams.set('redirect', `${normalizedPath}${search}`);
-        return NextResponse.redirect(loginUrl);
+        return redirectToRegister(req, `${normalizedPath}${search}`);
     }
 
     return NextResponse.next();

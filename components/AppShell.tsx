@@ -11,6 +11,7 @@ import { PlexonReturnLink } from './federation/PlexonReturnLink';
 import { BrandColorInitializer } from './settings/BrandColorInitializer';
 import { THEME_ACCENT_WITH_FALLBACK } from '@/lib/theme-accent';
 import { APP_LAYOUT_INNER_BORDER_WIDTH_PX, PATH_LOGIN, PATH_REGISTER, PATH_SHARE } from '@/lib/constants';
+import { isAmcMobileMainFlushHorizontal } from '@/lib/amc-lite';
 
 const AUTH_PATHS = [PATH_LOGIN, PATH_REGISTER];
 /** Share landing pages: use app layout + logo but hide navigation. */
@@ -37,6 +38,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
 
     const showSidebar = !isSharePage;
+    const flushMainHorizontal = pathname != null && isAmcMobileMainFlushHorizontal(pathname);
 
     const layoutProps = {
         appName: 'CHECKION',
@@ -123,7 +125,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                             zIndex: 0,
                             overflowY: 'auto',
                             isolation: 'isolate',
-                            padding: { xs: '1rem', md: '1.5rem' },
+                            padding: {
+                                xs: flushMainHorizontal ? '1rem 0' : '1rem',
+                                md: '1.5rem',
+                            },
                             minWidth: 0,
                             maxWidth: '100%',
                             width: '100%',

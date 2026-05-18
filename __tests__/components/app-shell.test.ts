@@ -8,6 +8,8 @@ describe('AppShell mobile nav', () => {
     expect(source).toContain('useState(false)');
     expect(source).toContain("breakpoints.down('md')");
     expect(source).not.toContain('useState(true)');
+    expect(source).toContain('isAmcMobileMainFlushHorizontal');
+    expect(source).toContain("'1rem 0'");
   });
 
   it('defaults Sidebar open prop to false', () => {

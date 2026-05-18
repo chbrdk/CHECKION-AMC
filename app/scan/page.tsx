@@ -481,11 +481,15 @@ function ScanPage() {
     return (
         <Box
             sx={{
-                p: scanPageHeaderEnabled
-                    ? 'var(--msqdx-spacing-md)'
-                    : { xs: 'var(--msqdx-spacing-sm)', md: 'var(--msqdx-spacing-md)' },
+                ...(scanPageHeaderEnabled
+                    ? { p: 'var(--msqdx-spacing-md)' }
+                    : {
+                          px: { xs: 0, md: 'var(--msqdx-spacing-md)' },
+                          py: { xs: 'var(--msqdx-spacing-sm)', md: 'var(--msqdx-spacing-md)' },
+                      }),
                 maxWidth: 1600,
                 mx: 'auto',
+                width: '100%',
             }}
         >
             {scanPageHeaderEnabled && (

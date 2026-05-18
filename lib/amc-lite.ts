@@ -64,6 +64,16 @@ export function isAmcScanPageHeaderEnabled(): boolean {
   return false;
 }
 
+/** AMC demo: /scan uses full-width content on mobile (no horizontal main/page padding). */
+export function isAmcScanRoute(pathname: string): boolean {
+  const path = normalizePathnameForAmcLite(pathname);
+  return path === PATH_SCAN || path.startsWith(`${PATH_SCAN}/`);
+}
+
+export function isAmcMobileMainFlushHorizontal(pathname: string): boolean {
+  return isAmcScanRoute(pathname);
+}
+
 /** Path prefixes allowed without redirect to /scan */
 const ALLOWED_PREFIXES = [
   PATH_LOGIN,

@@ -5,6 +5,7 @@
 import { NextResponse } from 'next/server';
 import { apiError, handleApiError, API_STATUS } from '@/lib/api-error-handler';
 import { parseApiBody } from '@/lib/api-schemas';
+import { AMC_API_MESSAGES } from '@/lib/amc-api-messages';
 import { amcRegisterBodySchema } from '@/lib/amc-register';
 import { recordAmcMarketingConsent } from '@/lib/amc-marketing-consent';
 import { checkRateLimit, getClientIpForRateLimit } from '@/lib/rate-limit';
@@ -24,13 +25,13 @@ const SALT_ROUNDS = 10;
 export async function POST(request: Request) {
     if (!process.env.DATABASE_URL) {
         console.error('[CHECKION-AMC] DATABASE_URL is not set');
-        return apiError('Server misconfiguration: database not configured.', API_STATUS.UNAVAILABLE);
+        return apiError(AMC_API_MESSAGES.dbNotConfigured, API_STATUS.UNAVAILABLE);
     }
     const ip = getClientIpForRateLimit(request);
     const rl = await checkRateLimit(`register:${ip}`, 'register');
     if (!rl.allowed) {
         return apiError(
-            'Too many registration attempts. Please try again later.',
+            AMC_API_MESSAGES.rateLimitRegister,
             API_STATUS.TOO_MANY_REQUESTS,
             rl.retryAfter ? { retryAfter: rl.retryAfter } : undefined
         );
@@ -48,9 +49,9 @@ export async function POST(request: Request) {
             const pr = await registerUserAtPlexon({ email, password, name });
             if (!pr.ok) {
                 if (pr.status === 409) {
-                    return apiError('Email already registered.', API_STATUS.CONFLICT);
+                    return apiError(AMC_API_MESSAGES.emailAlreadyRegistered, API_STATUS.CONFLICT);
                 }
-                return apiError(pr.error || 'PLEXON registration failed.', pr.status);
+                return apiError(pr.error || AMC_API_MESSAGES.plexonRegisterFailed, pr.status);
             }
             await patchPlexonProfile(pr.userId, { name, company });
             await recordAmcMarketingConsent(db, { userId: pr.userId, email, name, company });
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
 
         const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
         if (existing.length > 0) {
-            return apiError('Email already registered.', API_STATUS.CONFLICT);
+            return apiError(AMC_API_MESSAGES.emailAlreadyRegistered, API_STATUS.CONFLICT);
         }
 
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -75,6 +76,6 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, userId: id });
     } catch (e) {
-        return handleApiError(e, { context: 'Register failed', publicMessage: 'Registration failed.' });
+        return handleApiError(e, { context: 'Register failed', publicMessage: AMC_API_MESSAGES.registrationFailed });
     }
 }

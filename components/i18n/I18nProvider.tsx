@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { isAmcGermanOnlyLocale, resolveAmcLocale } from '@/lib/amc-locale';
 import { createTranslator, DEFAULT_LOCALE, normalizeLocale, type Locale } from '@/lib/i18n';
 import { LOCALE_STORAGE_KEY } from '@/lib/constants';
 
@@ -21,13 +22,20 @@ export function I18nProvider({
   children: React.ReactNode;
   initialLocale?: Locale;
 }) {
-  const [locale, setLocaleState] = useState<Locale>(normalizeLocale(initialLocale ?? DEFAULT_LOCALE));
+  const fixedLocale = isAmcGermanOnlyLocale() ? resolveAmcLocale() : null;
+  const [locale, setLocaleState] = useState<Locale>(
+    fixedLocale ?? normalizeLocale(initialLocale ?? DEFAULT_LOCALE)
+  );
 
   useEffect(() => {
+    if (fixedLocale) {
+      setLocaleState(fixedLocale);
+      return;
+    }
     if (typeof window === 'undefined') return;
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
     if (stored) setLocaleState(normalizeLocale(stored));
-  }, []);
+  }, [fixedLocale]);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -41,6 +49,10 @@ export function I18nProvider({
   }, [locale]);
 
   const setLocale = (value: Locale | string) => {
+    if (isAmcGermanOnlyLocale()) {
+      setLocaleState(resolveAmcLocale());
+      return;
+    }
     setLocaleState(normalizeLocale(String(value)));
   };
 

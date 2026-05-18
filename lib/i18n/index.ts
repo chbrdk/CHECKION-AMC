@@ -1,10 +1,11 @@
 import de from '../../locales/de.json';
 import en from '../../locales/en.json';
+import { isAmcGermanOnlyLocale, resolveAmcLocale } from '@/lib/amc-locale';
 
 export type Locale = 'de' | 'en';
 
 export const DEFAULT_LOCALE: Locale = 'de';
-export const SUPPORTED_LOCALES: Locale[] = ['de', 'en'];
+export const SUPPORTED_LOCALES: Locale[] = isAmcGermanOnlyLocale() ? ['de'] : ['de', 'en'];
 
 const dictionaries: Record<Locale, Record<string, unknown>> = {
   de,
@@ -25,6 +26,7 @@ const interpolate = (value: string, params?: Record<string, string | number>): s
 };
 
 export const normalizeLocale = (value?: string | null): Locale => {
+  if (isAmcGermanOnlyLocale()) return resolveAmcLocale();
   if (!value) return DEFAULT_LOCALE;
   const lower = value.toLowerCase();
   if (lower.startsWith('en')) return 'en';
@@ -32,6 +34,7 @@ export const normalizeLocale = (value?: string | null): Locale => {
 };
 
 export const resolveLocale = (cookieLocale?: string | null, acceptLanguage?: string | null): Locale => {
+  if (isAmcGermanOnlyLocale()) return resolveAmcLocale();
   if (cookieLocale) return normalizeLocale(cookieLocale);
   if (acceptLanguage) {
     const primary = acceptLanguage.split(',')[0]?.trim();
@@ -41,7 +44,8 @@ export const resolveLocale = (cookieLocale?: string | null, acceptLanguage?: str
 };
 
 export const createTranslator = (locale: Locale) => {
-  const dictionary = (dictionaries[locale] ?? dictionaries[DEFAULT_LOCALE]) as Record<string, unknown>;
+  const effectiveLocale = isAmcGermanOnlyLocale() ? resolveAmcLocale() : locale;
+  const dictionary = (dictionaries[effectiveLocale] ?? dictionaries[DEFAULT_LOCALE]) as Record<string, unknown>;
   const fallback = dictionaries[DEFAULT_LOCALE] as Record<string, unknown>;
   return (key: string, params?: Record<string, string | number>): string => {
     const raw = getNestedValue(dictionary, key) ?? getNestedValue(fallback, key) ?? key;

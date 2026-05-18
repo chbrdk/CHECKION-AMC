@@ -31,6 +31,7 @@ git merge upstream/main
 - **Routen:** `proxy.ts` (Next.js 16) erlaubt `/scan`, `/results/*`, Login/Register, API. `/` → Redirect `/scan`. Alles andere → `/scan`.
 - **DB:** Gleiche `DATABASE_URL` wie Haupt-CHECKION möglich.
 - **Schema:** Kein `drizzle-kit push` beim Start (nur mit `CHECKION_RUN_SCHEMA_PUSH=1`). Migrationen über Haupt-CHECKION.
+- **Sprache:** UI und AMC-API-Fehlertexte **ausschließlich Deutsch** (`lib/amc-locale.ts` erzwingt `de`; Cookie/Browser-`en` wird ignoriert).
 
 ## Coolify (AMC)
 
@@ -47,6 +48,7 @@ Repo in Coolify auf **CHECKION-AMC** umstellen (nicht CHECKION).
 ## Code-Stellen (nur im Fork)
 
 - `lib/amc-lite.ts` — Routen-Allowlist
+- `lib/amc-locale.ts`, `lib/amc-api-messages.ts` — Deutsch-only Locale & API-Meldungen
 - `lib/amc-register.ts` — Registrierungs-Schema + Passwort-Generierung
 - `app/register/page.tsx`, `app/api/auth/register/route.ts`
 - `proxy.ts`

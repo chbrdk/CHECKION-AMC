@@ -5,17 +5,17 @@ import { Providers } from '@/components/Providers';
 import { I18nProvider } from '@/components/i18n/I18nProvider';
 import { StatusUiProvider } from '@/components/status/StatusUiContext';
 import { getPublicAssetPath } from '@/lib/constants';
-import { getServerLocale } from '@/lib/i18n/server';
+import { resolveAmcLocale } from '@/lib/amc-locale';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
-  title: 'CHECKION – WCAG Accessibility Checker',
-  description: 'Automated WCAG accessibility checks powered by pa11y and axe-core.',
+  title: 'CHECKION – WCAG-Barrierefreiheits-Checker',
+  description: 'Automatisierte WCAG-Prüfungen mit pa11y und axe-core.',
   icons: { icon: getPublicAssetPath('/favicon.svg') },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getServerLocale();
+  const locale = resolveAmcLocale();
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>

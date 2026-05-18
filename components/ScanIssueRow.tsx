@@ -10,12 +10,7 @@ import {
 } from '@msqdx/tokens';
 import type { Issue } from '@/lib/types';
 import { useI18n } from '@/components/i18n/I18nProvider';
-
-const SEVERITY_CONFIG: Record<string, { label: string; color: string }> = {
-    error: { label: 'Error', color: MSQDX_STATUS.error.base },
-    warning: { label: 'Warning', color: MSQDX_STATUS.warning.base },
-    notice: { label: 'Notice', color: MSQDX_STATUS.info.base },
-};
+import { issueSeverityConfig } from '@/lib/issues/severity-config';
 
 const tableBorder = `1px solid ${MSQDX_NEUTRAL[200]}`;
 
@@ -29,7 +24,7 @@ interface ScanIssueRowProps {
 /** Highlight is applied via parent CSS (data-highlighted-index + data-row-index) so this row never re-renders when highlight changes. */
 export const ScanIssueRow = memo(({ issue, globalRowIndex, registerRef }: ScanIssueRowProps) => {
     const { t } = useI18n();
-    const config = SEVERITY_CONFIG[issue.type] ?? SEVERITY_CONFIG.notice;
+    const config = issueSeverityConfig(issue.type);
     const handleRef = React.useCallback(
         (el: HTMLDivElement | null) => registerRef(globalRowIndex, el),
         [globalRowIndex, registerRef]

@@ -2,10 +2,11 @@
 
 import React, { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Box, alpha } from '@mui/material';
+import { Box, alpha, useMediaQuery, useTheme } from '@mui/material';
 import { MSQDX_SPACING, MSQDX_NEUTRAL, MSQDX_THEME, MSQDX_STATUS } from '@msqdx/tokens';
-import { MsqdxTypography } from '@msqdx/react';
+import { MsqdxAccordion, MsqdxTypography } from '@msqdx/react';
 import { ScanIssueRow } from './ScanIssueRow';
+import { ScanIssueItem } from './ScanIssueItem';
 import type { Issue } from '@/lib/types';
 import { SCAN_ISSUE_LIST_ROW_FALLBACK_PX } from '@/lib/constants';
 import { estimateScanIssueListRowHeights } from '@/lib/pretext-issue-row-heights';
@@ -30,10 +31,13 @@ const ScanIssueListInner = forwardRef<ScanIssueListHandle, ScanIssueListProps>(f
     { issues, issueIndexBase = 0, highlightedIndex, registerRef },
     ref
 ) {
+    const theme = useTheme();
+    const compact = useMediaQuery(theme.breakpoints.down('md'), { noSsr: true });
     const scrollRef = useRef<HTMLDivElement>(null);
     const [scrollInnerWidth, setScrollInnerWidth] = useState(0);
 
     useEffect(() => {
+        if (compact) return;
         const el = scrollRef.current;
         if (!el) return;
         const ro = new ResizeObserver((entries) => {
@@ -43,15 +47,15 @@ const ScanIssueListInner = forwardRef<ScanIssueListHandle, ScanIssueListProps>(f
         ro.observe(el);
         setScrollInnerWidth(el.clientWidth);
         return () => ro.disconnect();
-    }, []);
+    }, [compact]);
 
     const rowHeightEstimates = useMemo(
-        () => estimateScanIssueListRowHeights(issues, scrollInnerWidth),
-        [issues, scrollInnerWidth]
+        () => (compact ? [] : estimateScanIssueListRowHeights(issues, scrollInnerWidth)),
+        [compact, issues, scrollInnerWidth]
     );
 
     const rowVirtualizer = useVirtualizer({
-        count: issues.length,
+        count: compact ? 0 : issues.length,
         getScrollElement: () => scrollRef.current,
         estimateSize: (index) => rowHeightEstimates[index] ?? SCAN_ISSUE_LIST_ROW_FALLBACK_PX,
         overscan: 10,
@@ -65,146 +69,176 @@ const ScanIssueListInner = forwardRef<ScanIssueListHandle, ScanIssueListProps>(f
         ref,
         () => ({
             scrollToGlobalIndex(filteredGlobalIndex: number) {
+                if (compact) {
+                    document.getElementById(`issue-${filteredGlobalIndex}-wrapper`)?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                    });
+                    return;
+                }
                 const local = filteredGlobalIndex - issueIndexBase;
                 if (local < 0 || local >= issues.length) return;
                 rowVirtualizer.scrollToIndex(local, { align: 'center', behavior: 'smooth' });
             },
         }),
-        [issueIndexBase, issues.length, rowVirtualizer]
+        [compact, issueIndexBase, issues.length, rowVirtualizer]
     );
 
     const containerSx = useMemo(
         () => ({
-            border: tableBorder,
-            borderRadius: `${MSQDX_SPACING.borderRadius.md}px`,
-            overflow: 'auto',
-            maxHeight: '65vh',
-            backgroundColor: MSQDX_THEME.light.surface.primary,
+            border: compact ? 'none' : tableBorder,
+            borderRadius: compact ? 0 : `${MSQDX_SPACING.borderRadius.md}px`,
+            overflow: compact ? 'visible' : 'auto',
+            maxHeight: compact ? 'none' : '65vh',
+            backgroundColor: compact ? 'transparent' : MSQDX_THEME.light.surface.primary,
             color: MSQDX_THEME.light.text.primary,
-            contain: 'layout',
+            contain: compact ? undefined : 'layout',
             ...(highlightedIndex !== null && {
                 [`& [data-row-index="${highlightedIndex}"]`]: {
                     backgroundColor: highlightBg,
+                    ...(compact && { boxShadow: `inset 0 0 0 2px ${MSQDX_STATUS.info.base}` }),
                 },
             }),
         }),
-        [highlightedIndex]
+        [compact, highlightedIndex]
     );
+
+    if (compact) {
+        return (
+            <Box component="div" data-highlighted-index={highlightedIndex ?? ''} ref={scrollRef} sx={containerSx}>
+                <MsqdxAccordion
+                    allowMultiple
+                    size="small"
+                    borderRadius="md"
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 1, background: 'transparent', border: 'none' }}
+                >
+                    {issues.map((issue, index) => (
+                        <ScanIssueItem
+                            key={`${issueIndexBase + index}:${issue.code}:${issue.selector ?? ''}`}
+                            issue={issue}
+                            globalRowIndex={issueIndexBase + index}
+                            registerRef={registerRef}
+                        />
+                    ))}
+                </MsqdxAccordion>
+            </Box>
+        );
+    }
 
     return (
         <Box component="div" data-highlighted-index={highlightedIndex ?? ''} ref={scrollRef} sx={containerSx}>
-                <Box
-                    component="div"
-                    role="row"
-                    sx={{
-                        display: 'grid',
-                        gridTemplateColumns: 'minmax(0, 1fr) minmax(120px, 1.2fr) 80px 72px minmax(0, 1fr) 40px',
-                        gap: 0,
-                        borderBottom: tableBorder,
-                        backgroundColor: MSQDX_NEUTRAL[100],
-                        alignItems: 'center',
-                        minHeight: 40,
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 2,
-                    }}
-                >
-                    <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
-                        <MsqdxTypography
-                            variant="caption"
-                            sx={{
-                                fontWeight: 600,
-                                color: MSQDX_THEME.light.text.tertiary,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.05em',
-                            }}
-                        >
-                            Schwere
-                        </MsqdxTypography>
-                    </Box>
-                    <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
-                        <MsqdxTypography
-                            variant="caption"
-                            sx={{
-                                fontWeight: 600,
-                                color: MSQDX_THEME.light.text.tertiary,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.05em',
-                            }}
-                        >
-                            Meldung
-                        </MsqdxTypography>
-                    </Box>
-                    <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
-                        <MsqdxTypography
-                            variant="caption"
-                            sx={{
-                                fontWeight: 600,
-                                color: MSQDX_THEME.light.text.tertiary,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.05em',
-                            }}
-                        >
-                            Level
-                        </MsqdxTypography>
-                    </Box>
-                    <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
-                        <MsqdxTypography
-                            variant="caption"
-                            sx={{
-                                fontWeight: 600,
-                                color: MSQDX_THEME.light.text.tertiary,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.05em',
-                            }}
-                        >
-                            Runner
-                        </MsqdxTypography>
-                    </Box>
-                    <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
-                        <MsqdxTypography
-                            variant="caption"
-                            sx={{
-                                fontWeight: 600,
-                                color: MSQDX_THEME.light.text.tertiary,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.05em',
-                            }}
-                        >
-                            Code
-                        </MsqdxTypography>
-                    </Box>
-                    <Box component="div" role="columnheader" sx={{ px: 1, py: 1 }} aria-hidden />
+            <Box
+                component="div"
+                role="row"
+                sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(0, 1fr) minmax(120px, 1.2fr) 80px 72px minmax(0, 1fr) 40px',
+                    gap: 0,
+                    borderBottom: tableBorder,
+                    backgroundColor: MSQDX_NEUTRAL[100],
+                    alignItems: 'center',
+                    minHeight: 40,
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 2,
+                }}
+            >
+                <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
+                    <MsqdxTypography
+                        variant="caption"
+                        sx={{
+                            fontWeight: 600,
+                            color: MSQDX_THEME.light.text.tertiary,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                        }}
+                    >
+                        Schwere
+                    </MsqdxTypography>
                 </Box>
-                <Box
-                    sx={{
-                        height: `${rowVirtualizer.getTotalSize()}px`,
-                        width: '100%',
-                        position: 'relative',
-                    }}
-                >
-                    {rowVirtualizer.getVirtualItems().map((vi) => {
-                        const issue = issues[vi.index];
-                        if (!issue) return null;
-                        const globalRowIndex = issueIndexBase + vi.index;
-                        return (
-                            <div
-                                key={vi.key}
-                                data-index={vi.index}
-                                ref={rowVirtualizer.measureElement}
-                                style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    width: '100%',
-                                    transform: `translateY(${vi.start}px)`,
-                                }}
-                            >
-                                <ScanIssueRow issue={issue} globalRowIndex={globalRowIndex} registerRef={registerRef} />
-                            </div>
-                        );
-                    })}
+                <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
+                    <MsqdxTypography
+                        variant="caption"
+                        sx={{
+                            fontWeight: 600,
+                            color: MSQDX_THEME.light.text.tertiary,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                        }}
+                    >
+                        Meldung
+                    </MsqdxTypography>
                 </Box>
+                <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
+                    <MsqdxTypography
+                        variant="caption"
+                        sx={{
+                            fontWeight: 600,
+                            color: MSQDX_THEME.light.text.tertiary,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                        }}
+                    >
+                        Level
+                    </MsqdxTypography>
+                </Box>
+                <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
+                    <MsqdxTypography
+                        variant="caption"
+                        sx={{
+                            fontWeight: 600,
+                            color: MSQDX_THEME.light.text.tertiary,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                        }}
+                    >
+                        Runner
+                    </MsqdxTypography>
+                </Box>
+                <Box component="div" role="columnheader" sx={{ px: 1.5, py: 1 }}>
+                    <MsqdxTypography
+                        variant="caption"
+                        sx={{
+                            fontWeight: 600,
+                            color: MSQDX_THEME.light.text.tertiary,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                        }}
+                    >
+                        Code
+                    </MsqdxTypography>
+                </Box>
+                <Box component="div" role="columnheader" sx={{ px: 1, py: 1 }} aria-hidden />
+            </Box>
+            <Box
+                sx={{
+                    height: `${rowVirtualizer.getTotalSize()}px`,
+                    width: '100%',
+                    position: 'relative',
+                }}
+            >
+                {rowVirtualizer.getVirtualItems().map((vi) => {
+                    const issue = issues[vi.index];
+                    if (!issue) return null;
+                    const globalRowIndex = issueIndexBase + vi.index;
+                    return (
+                        <div
+                            key={vi.key}
+                            data-index={vi.index}
+                            ref={rowVirtualizer.measureElement}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                transform: `translateY(${vi.start}px)`,
+                            }}
+                        >
+                            <ScanIssueRow issue={issue} globalRowIndex={globalRowIndex} registerRef={registerRef} />
+                        </div>
+                    );
+                })}
+            </Box>
         </Box>
     );
 });
